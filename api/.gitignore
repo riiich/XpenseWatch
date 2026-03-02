@@ -1,0 +1,40 @@
+# Build outputs
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.userprefs
+
+# NuGet packages
+packages/
+*.nupkg
+
+# IDE and editor files
+.vs/
+.vscode/
+.idea/
+
+# Test results
+TestResults/
+*.trx
+
+# Environment and configuration files
+appsettings.Development.json
+appsettings.Local.json
+*.env
+
+# Miscellaneous
+*.swp
+*.swo
+
+# Front-end dependencies
+node_modules/
+bower_components/
+
+# Logs
+*.log
+
+# Azure Functions
+local.settings.json
