@@ -1,32 +1,32 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using api.DTOs.AccountDTOs;
 using api.DTOs.UserDTOs;
 using api.Interfaces;
-using api.Interfaces.AccountInterface;
-using api.Mappers;
+using api.Interfaces.ITokenServiceInterface;
 using api.Models;
-using api.Services;
-using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace api.Controllers
 {
-    [ApiController]
     [Route("api/users")]
+    [ApiController]
     public class UserController : ControllerBase
     {
         private readonly IUserServiceInterface _userService;
-        private readonly IAccountServiceInterface _accountService;  // an account (checkings) gets created by default when a user creates an account
+        private readonly UserManager<User> _userManager;
+        private readonly SignInManager<User> _signInManager;
+        private readonly ITokenServiceInterface _tokenService;
 
-        public UserController(IUserServiceInterface userService, IAccountServiceInterface accountService)
+        public UserController(IUserServiceInterface userService, UserManager<User> userManager,SignInManager<User> signInManager, ITokenServiceInterface tokenService)
         {
             _userService = userService;
-            _accountService = accountService;
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _tokenService = tokenService;
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> GetUsers()
         {
@@ -38,6 +38,7 @@ namespace api.Controllers
         }        
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetUserById([FromRoute] string id)
         {
             var user = await _userService.GetUserById(id);
@@ -47,25 +48,53 @@ namespace api.Controllers
             return Ok(user);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateUser(UserRegistrationDTO userRegister)
+        [HttpPost("register")]
+        public async Task<IActionResult> Register(UserRegistrationDTO userRegister)
         {
-            if (userRegister.Email == "") return BadRequest("Not an email.");   // FIX THIS (not valid to just check that it's empty)
+            if(!ModelState.IsValid) return BadRequest(ModelState);
 
-            var newUser = await _userService.CreateUser(userRegister);
-
-            // create default checkings account
-            var defaultCheckingsAccount = new AccountCreateDTO
+            var newUser = new User
             {
-                Name = "My Checking Account",
-                Type = "Checking",
-                Balance = 0,
-                Currency = "USD",
+                FirstName = userRegister.FirstName,
+                LastName = userRegister.LastName,
+                UserName = userRegister.Username,
+                Email = userRegister.Email
             };
 
-            var defaultUserAccount = await _accountService.CreateAccount(newUser.Id, defaultCheckingsAccount);
+            var createdUser = await _userService.CreateUser(userRegister);
 
-            return CreatedAtAction(nameof(GetUserById), new { id = newUser.Id }, newUser);
+            if(!userRegister.Email.Contains("."))
+                return BadRequest(new { errorMsg = "Email must contain a domain extension. (eg. .com, .org, ...)", code = "INVALID_EMAIL" });
+
+            if(createdUser.errors != null) return StatusCode(500, createdUser.errors);
+            
+            return CreatedAtAction(nameof(GetUserById), new { id = newUser.Id }, new UserLoginResponseDTO
+            {
+                Email = newUser.Email,
+                Username = newUser.UserName, 
+                Token = await _tokenService.CreateToken(newUser)
+            });
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(UserLoginDTO userLogin)
+        {
+            if(!ModelState.IsValid) return BadRequest(ModelState);
+
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == userLogin.Username);
+
+            if(user == null) return Unauthorized(new { errorMsg = "Either username or password is incorrect." });
+
+            var result = await _signInManager.CheckPasswordSignInAsync(user, userLogin.Password, false);
+
+            if(!result.Succeeded) return Unauthorized(new { errorMsg = "Either username or password is incorrect." });
+
+            return Ok(new UserLoginResponseDTO
+            {
+                Email = user.Email,
+                Username = user.UserName,
+                Token = await _tokenService.CreateToken(user)
+            });
         }
     }
 }

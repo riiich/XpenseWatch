@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.DTOs.TransactionDTOs;
+using api.Interfaces.AccountInterface;
+using api.Interfaces.CategoryInterface;
 using api.Interfaces.ITransactionInterface;
 using api.Mappers;
 using api.Models;
@@ -13,23 +15,35 @@ namespace api.Services
     public class TransactionService : ITransactionServiceInterface
 
     {
-        ITransactionRepositoryInterface _repo;
+        ITransactionRepositoryInterface _transactionRepo;
+        IAccountServiceInterface _accountService;
+        ICategoryServiceInterface _categoryService;
 
-        public TransactionService(ITransactionRepositoryInterface repo)
+        public TransactionService(ITransactionRepositoryInterface repo, 
+                                  IAccountServiceInterface accountService, 
+                                  ICategoryServiceInterface categoryService)
         {
-            _repo = repo;
+            _transactionRepo = repo;
+            _accountService = accountService;
+            _categoryService = categoryService;
         }
 
         public async Task<IEnumerable<TransactionResponseDTO>> GetTransactions()
         {
-            var transactions = await _repo.GetTransactionsAsync();
+            var transactions = await _transactionRepo.GetTransactionsAsync();
 
             return transactions.Select(t => TransactionMapper.TransactionToTransactionResponseDto(t));
         }
 
+        public async Task<IEnumerable<TransactionResponseDTO>> GetTransactionsByAccountId(int accountId)
+        {
+            var transactionsByAccount = await _transactionRepo.GetTransactionsByAccountIdAsync(accountId);
+            return transactionsByAccount.Select(t => Mappers.TransactionMapper.TransactionToTransactionResponseDto(t));
+        }
+
         public async Task<TransactionResponseDTO?> GetTransactionById(int id)
         {
-            var transaction = await _repo.GetTransactionByIdAsync(id);
+            var transaction = await _transactionRepo.GetTransactionByIdAsync(id);
 
             if (transaction == null) return null;
 
@@ -38,27 +52,27 @@ namespace api.Services
 
         public async Task<TransactionResponseDTO> CreateTransaction(TransactionCreateDTO transactionCreate)
         {
-            var newTransaction = await _repo.CreateTransactionAsync(TransactionMapper.TransactionCreateDtoToTransaction(transactionCreate));
+            var newTransaction = await _transactionRepo.CreateTransactionAsync(TransactionMapper.TransactionCreateDtoToTransaction(transactionCreate));
 
             return TransactionMapper.TransactionToTransactionResponseDto(newTransaction);
         }
 
         public async Task<TransactionResponseDTO?> UpdateTransaction(int id, TransactionUpdateDTO transactionUpdate)
         {
-            var transactionToBeUpdated = await _repo.GetTransactionByIdAsync(id);
+            var transactionToBeUpdated = await _transactionRepo.GetTransactionByIdAsync(id);
 
             if (transactionToBeUpdated == null) return null;
 
             TransactionMapper.TransactionUpdateDTOToTransaction(transactionToBeUpdated, transactionUpdate);
 
-            await _repo.UpdateTransactionAsync(id, transactionToBeUpdated);
+            await _transactionRepo.UpdateTransactionAsync(id, transactionToBeUpdated);
 
             return TransactionMapper.TransactionToTransactionResponseDto(transactionToBeUpdated);
         }
 
         public async Task<TransactionResponseDTO?> DeleteTransaction(int id)
         {
-            var deletedTransaction = await _repo.DeleteTransactionAsync(id);
+            var deletedTransaction = await _transactionRepo.DeleteTransactionAsync(id);
 
             if(deletedTransaction == null) return null;
 

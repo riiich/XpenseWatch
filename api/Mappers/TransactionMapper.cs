@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.DTOs.TransactionDTOs;
-using api.Migrations;
 using api.Models;
 
 namespace api.Mappers
@@ -23,6 +22,7 @@ namespace api.Mappers
                 Currency = transaction.Currency,
                 Description = transaction.Description,
                 Notes = transaction.Notes,
+                IsIncome = transaction.IsIncome,
                 IsManual = transaction.IsManual,
                 IsDeleted = transaction.IsDeleted
             };
@@ -42,6 +42,7 @@ namespace api.Mappers
                 TransactionDate = createDto.TransactionDate ?? DateOnly.FromDateTime(DateTime.Today),
                 EditDate = DateTime.Now,
                 CreatedAt = DateTime.Now,
+                IsIncome = createDto.IsIncome,
                 IsManual = createDto.IsManual,
                 IsDeleted = false
             };

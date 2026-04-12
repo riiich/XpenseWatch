@@ -12,15 +12,54 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using api.Interfaces.ITokenServiceInterface;
+using Microsoft.OpenApi;
+using Microsoft.OpenApi.Models;
+using api.Interfaces.CategoryInterface;
+using api.Interfaces.GoalInterface;
+
 
 var builder = WebApplication.CreateBuilder(args);
+
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
 // Add services to the container.
 
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+// builder.Services.AddSwaggerGen();
+
+// used to authorize whether the jwt is valid IN swagger 
+    builder.Services.AddSwaggerGen(option =>
+    {
+        option.SwaggerDoc("v1", new OpenApiInfo { Title = "XpenseWatch API", Version = "v1" });
+
+        option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+        {
+            In = ParameterLocation.Header,
+            Description = "Please enter a valid token.",
+            Name = "Authorization",
+            Type = SecuritySchemeType.Http,
+            BearerFormat = "JWT",
+            Scheme = "bearer"
+        });
+
+        option.AddSecurityRequirement(new OpenApiSecurityRequirement
+        {
+            {
+                new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                },
+                Array.Empty<string>()
+            }
+        });
+    });
 
 builder.Services.AddDbContext<ApplicationDBContext>(options => options.UseSqlServer(
     builder.Configuration.GetConnectionString("DefaultConnection")
@@ -29,6 +68,8 @@ builder.Services.AddDbContext<ApplicationDBContext>(options => options.UseSqlSer
 // User configuration with IdentityRole 
 builder.Services.AddIdentity<User, IdentityRole>(options =>
 {
+    options.User.RequireUniqueEmail = true;     // by default, it only checks for UserName so have to explicitly make email unique
+
     options.Password.RequireDigit = true;
     options.Password.RequiredLength = 8; 
 }).AddEntityFrameworkStores<ApplicationDBContext>();
@@ -67,6 +108,27 @@ builder.Services.AddScoped<ITransactionServiceInterface, TransactionService>();
 builder.Services.AddScoped<IAccountRepositoryInterface, AccountRepository>();
 builder.Services.AddScoped<IAccountServiceInterface, AccountService>();
 
+// Category
+builder.Services.AddScoped<ICategoryRepositoryInterface, CategoryRepository>();
+builder.Services.AddScoped<ICategoryServiceInterface, CategoryService>();
+
+// Goal
+builder.Services.AddScoped<IGoalRepositoryInterface, GoalRepository>();
+builder.Services.AddScoped<IGoalServiceInterface, GoalService>();
+
+// Token for JWT
+builder.Services.AddScoped<ITokenServiceInterface, TokenService>();
+
+// CORS configuration
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+                      policy =>
+                      {
+                        policy.WithOrigins("http://localhost:5173").AllowAnyHeader().AllowAnyMethod();
+                      });
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -77,6 +139,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors(MyAllowSpecificOrigins);
 
 app.UseAuthentication();
 

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace api.DTOs.CategoryDTOs
+namespace api.Interfaces.GoalInterface
 {
-    public class CategoryToCategoryResponseDTO
+    public interface IGoalServiceInterface
     {
         
     }

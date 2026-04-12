@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using api.DTOs.TransactionDTOs;
 using api.Interfaces;
 using api.Interfaces.ITransactionInterface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
@@ -31,7 +33,18 @@ namespace api.Controllers
             return Ok(transactions);
         }
 
+        // get transactions based on account id
+        [HttpGet("{accId}/transactions")]
+        [Authorize]
+        public async Task<IActionResult> GetTransactionsByAccountId([FromRoute] int accId)
+        {
+            var transactionsForAccount = await _service.GetTransactionsByAccountId(accId);
+
+            return Ok(transactionsForAccount);
+        }
+
         [HttpGet("{id}")]
+
         public async Task<IActionResult> GetTransactionById([FromRoute] int id)
         {
             var transaction = await _service.GetTransactionById(id);
@@ -45,6 +58,8 @@ namespace api.Controllers
         public async Task<IActionResult> CreateTransaction([FromBody] TransactionCreateDTO createTransaction)
         {
             var newTransaction = await _service.CreateTransaction(createTransaction);
+
+            // apply static function
 
             return Ok(newTransaction);
         }

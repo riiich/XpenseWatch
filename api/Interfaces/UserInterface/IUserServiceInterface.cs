@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using api.DTOs.UserDTOs;
 using api.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.Interfaces
@@ -13,6 +14,6 @@ namespace api.Interfaces
         // using IEnumberable instead of list b/c it's read-only list
         Task<IEnumerable<UserResponseDTO>> GetAllUsers();
         Task<UserResponseDTO?> GetUserById(string id);
-        Task<UserResponseDTO> CreateUser(UserRegistrationDTO userRegister);
-    }   
+        Task<(UserResponseDTO?, IEnumerable<string>? errors)> CreateUser(UserRegistrationDTO userRegister);
+    }
 }

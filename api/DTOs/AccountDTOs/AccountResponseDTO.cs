@@ -8,7 +8,7 @@ namespace api.DTOs.AccountDTOs
     public class AccountResponseDTO
     {
         public int Id { get; set; }
-        public int UserId { get; set; }
+        public string UserId { get; set; }
         public required string Name { get; set; }
         public string? Type { get; set; }   // "Checkings", "Savings", "Credit", ...
         public decimal Balance { get; set; } = 0;

@@ -16,6 +16,7 @@ namespace api.DTOs.TransactionDTOs
         public required string Currency { get; set; }
         public string? Description { get; set; }
         public string? Notes { get; set; }
+        public bool IsIncome { get; set; }
         public bool IsManual { get; set; }
         public bool IsDeleted { get; set; }
     }

@@ -18,9 +18,9 @@ namespace api.Services
             _repo = repo;
         }
 
-        public async Task<IEnumerable<AccountResponseDTO>?> GetAccounts()
+        public async Task<IEnumerable<AccountResponseDTO>?> GetAccounts(string userId)
         {
-            var accounts = await _repo.GetAccountsAsync();
+            var accounts = await _repo.GetAccountsAsync(userId);
 
             if (accounts == null) return null;
 
@@ -36,7 +36,7 @@ namespace api.Services
             return AccountMapper.AccountToAccountResponseDto(account);
         }
 
-        public async Task<AccountResponseDTO> CreateAccount(int userId, AccountCreateDTO accountCreate)
+        public async Task<AccountResponseDTO> CreateAccount(string userId, AccountCreateDTO accountCreate)
         {
             var newAccount = AccountMapper.AccountCreateDtoToAccount(userId, accountCreate);
 

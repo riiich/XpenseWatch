@@ -1,4 +1,5 @@
 using api.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace api.Interfaces.UserInterface
 {
@@ -6,6 +7,5 @@ namespace api.Interfaces.UserInterface
     {
         Task<List<User>> GetUsersAsync();
         Task<User?> GetUserByIdAsync(string id);
-        Task CreateUserAsync(User user);
     }
 }

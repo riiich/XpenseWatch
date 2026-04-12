@@ -14,9 +14,9 @@ namespace api.Repositories
             _context = context;
         }
 
-        public async Task<List<Account>> GetAccountsAsync()
+        public async Task<List<Account>> GetAccountsAsync(string userId)
         {
-            return await _context.Accounts.ToListAsync();
+            return await _context.Accounts.Where(a => a.UserId == userId).ToListAsync();
         }
 
         public async Task<Account?> GetAccountByIdAsync(int id)

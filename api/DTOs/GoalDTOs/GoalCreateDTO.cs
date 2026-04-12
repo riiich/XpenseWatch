@@ -1,21 +1,17 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace api.Models
+namespace api.DTOs.GoalDTOs
 {
-    public class Goal
+    public class GoalCreateDTO
     {
-        public int Id { get; set; }
         public string? Name { get; set; }
         public decimal CurrentBalance { get; set; }
         public decimal TargetBalance { get; set; }
         public DateOnly TargetDate { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime EditDate { get; set; }
+
         public int AccountId { get; set; }
-        public Account? Account { get; set; }
     }
 }

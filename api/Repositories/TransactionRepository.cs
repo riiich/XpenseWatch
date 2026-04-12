@@ -22,12 +22,17 @@ namespace api.Repositories
 
         public async Task<List<Transaction>> GetTransactionsAsync()
         {
-            return await _context.Transactions.Include(a => a.Account).Include(c => c.Category).ToListAsync();
+            return await _context.Transactions.Include(t => t.Account).Include(t => t.Category).ToListAsync();
+        }
+
+        public async Task<List<Transaction>> GetTransactionsByAccountIdAsync(int accountId)
+        {
+            return await _context.Transactions.Include(t => t.Account).Include(t => t.Category).Where(t => t.AccountId == accountId).ToListAsync();
         }
 
         public async Task<Transaction?> GetTransactionByIdAsync(int id)
         {
-            return await _context.Transactions.Include(a => a.Account).Include(c => c.Category).FirstOrDefaultAsync(t => id == t.Id);
+            return await _context.Transactions.Include(t => t.Account).Include(t => t.Category).FirstOrDefaultAsync(t => id == t.Id);
         }
 
         public async Task<Transaction> CreateTransactionAsync(Transaction transactionCreate)
@@ -44,6 +49,7 @@ namespace api.Repositories
                 Currency = transactionCreate.Currency,
                 Description = transactionCreate.Description,
                 Notes = transactionCreate.Notes,
+                IsIncome = transactionCreate.IsIncome,
                 IsManual = transactionCreate.IsManual,
                 IsDeleted = false,
             };

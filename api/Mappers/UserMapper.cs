@@ -15,6 +15,7 @@ namespace api.Mappers
             {
                 FirstName = userRegistrationDto.FirstName,
                 LastName = userRegistrationDto.LastName,
+                UserName = userRegistrationDto.Username,
                 Email = userRegistrationDto.Email
             };
         }
@@ -36,6 +37,7 @@ namespace api.Mappers
                 Id = user.Id,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
+                UserName = user.UserName,
                 Email = user.Email,
                 CreatedAt = user.CreatedAt,
                 Accounts = user.Accounts.Select(a => AccountMapper.AccountToAccountResponseDto(a)).ToList()

@@ -1,0 +1,6 @@
+- category id is stored with the transaction. now use this id to 
+    get the correct category name (right now it's stored as "Uncategorized").
+    need to somehow get the name of the account/category name as assign it 
+    correctly in the transaction mapper
+- display the transactions from each account
+- use boolean to determine if a transaction is money going in or out of the account

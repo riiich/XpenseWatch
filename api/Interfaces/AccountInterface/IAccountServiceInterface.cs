@@ -9,9 +9,9 @@ namespace api.Interfaces.AccountInterface
 {
     public interface IAccountServiceInterface
     {
-        Task<IEnumerable<AccountResponseDTO>?> GetAccounts();
+        Task<IEnumerable<AccountResponseDTO>?> GetAccounts(string userId);
         Task<AccountResponseDTO?> GetAccountById(int id);
-        Task<AccountResponseDTO> CreateAccount(int userId, AccountCreateDTO account);
-        Task<AccountResponseDTO?> UpdateAccount(int userId, AccountUpdateDTO accountUpdate);
+        Task<AccountResponseDTO> CreateAccount(string userId, AccountCreateDTO account);
+        Task<AccountResponseDTO?> UpdateAccount(int id, AccountUpdateDTO accountUpdate);
     }
 }

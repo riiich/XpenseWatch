@@ -9,7 +9,7 @@ namespace api.Interfaces.AccountInterface
     public interface IAccountRepositoryInterface
     {
         
-        Task<List<Account>> GetAccountsAsync();
+        Task<List<Account>> GetAccountsAsync(string userId);
         Task<Account?> GetAccountByIdAsync(int id);
         Task CreateAccountAsync(Account account);
         Task<Account?> UpdateAccountAsync(int id);        

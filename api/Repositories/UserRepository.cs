@@ -7,6 +7,7 @@ using api.DTOs.UserDTOs;
 using api.Interfaces;
 using api.Interfaces.UserInterface;
 using api.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,27 +15,24 @@ namespace api.Repositories
 {
     public class UserRepository : IUserRepositoryInterface
     {
-        private readonly ApplicationDBContext _context;
+        private readonly UserManager<User> _userManager;    // mainly use userManager
+        private readonly ApplicationDBContext _context;     // use for complex joins and such
 
-        public UserRepository(ApplicationDBContext context)
+        public UserRepository(ApplicationDBContext context, UserManager<User> userManager)
         {
+            _userManager = userManager;
             _context = context;
         }
 
         public async Task<List<User>> GetUsersAsync()
         {
-            return await _context.Users.Include(a => a.Accounts).ToListAsync();
+            return await _userManager.Users.ToListAsync();
         }
 
         public async Task<User?> GetUserByIdAsync(string id)
         {
-            return await _context.Users.Include(a => a.Accounts).FirstOrDefaultAsync(u => id == u.Id);
+            return await _userManager.Users.Include(a => a.Accounts).FirstOrDefaultAsync(u => id == u.Id);
         }
 
-        public async Task CreateUserAsync(User user)
-        {
-            await _context.Users.AddAsync(user);
-            await _context.SaveChangesAsync();
-        }
     }
 }

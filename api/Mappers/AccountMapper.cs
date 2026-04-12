@@ -21,7 +21,7 @@ namespace api.Mappers
             };
         }
 
-        static public Account AccountCreateDtoToAccount(int userId, AccountCreateDTO acc)
+        static public Account AccountCreateDtoToAccount(string userId, AccountCreateDTO acc)
         {
             return new Account
             {
