@@ -14,5 +14,4 @@ export const shortDate = (dateStr: string) =>
         day: "numeric",
     });
 
-export const randomId = () =>
-    `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+export const randomId = () => Math.random();

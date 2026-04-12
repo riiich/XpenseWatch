@@ -40,7 +40,7 @@ export function TransactionRow({ transaction: tx, onDelete }: TransactionRowProp
 
       {/* Amount */}
       <span
-        className={`text-[13px] font-medium tracking-wide w-28 text-right shrink-0 ${
+        className={`text-[15px] font-medium tracking-wide w-28 text-right shrink-0 ${
           isCredit ? "text-emerald-400" : "text-slate-100"
         }`}
       >

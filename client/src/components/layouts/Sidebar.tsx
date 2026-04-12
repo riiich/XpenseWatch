@@ -44,7 +44,7 @@ export function Sidebar({ onAddAccount }: SidebarProps) {
                   acc.balance >= 0 ? "text-slate-500" : "text-rose-400"
                 }`}
               >
-                {fmt(acc.balance, acc.currency)}
+                {fmt(acc.balance)}
               </span>
             </div>
           </button>
@@ -64,8 +64,8 @@ export function Sidebar({ onAddAccount }: SidebarProps) {
       <div className="px-3 pt-5 border-t border-[#1e293b]">
         <button
           onClick={logout}
-          className="w-full px-3 py-2 rounded-lg text-[11px] text-slate-500
-            tracking-widest hover:text-slate-400 transition-colors text-left"
+          className="w-full px-3 py-2 rounded-lg text-[13px] text-red-300
+            tracking-widest hover:text-red-200 transition-colors text-left"
         >
           Sign Out
         </button>
