@@ -1,4 +1,5 @@
 using api.Data;
+using api.Helpers;
 using api.Interfaces.AccountInterface;
 using api.Models;
 using Microsoft.EntityFrameworkCore;
@@ -43,6 +44,19 @@ namespace api.Repositories
             await _context.SaveChangesAsync();
 
             return accountToBeUpdated;
+        }
+
+        public async Task<Account?> UpdateAccountBalanceAsync(int id, decimal amount, bool isIncome)
+        {
+            var account = await _context.Accounts.FindAsync(id);
+
+            if(account == null) return null;
+
+            var updatedBalance = FinanceExtensions.CalculateNewBalance(account.Balance, amount, isIncome);
+            account.Balance = updatedBalance;
+            await _context.SaveChangesAsync();
+
+            return account;
         }
     }
 }

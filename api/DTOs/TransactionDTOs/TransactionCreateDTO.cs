@@ -7,8 +7,8 @@ namespace api.DTOs.TransactionDTOs
 {
     public class TransactionCreateDTO
     {
-        public int? AccountId { get; set; }
-        public int? CategoryId { get; set; }
+        public int AccountId { get; set; }
+        public int CategoryId { get; set; }
         public DateOnly? TransactionDate { get; set; }
         public decimal Amount { get; set; }
         public string? Description { get; set; }

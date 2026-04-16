@@ -3,9 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System.Transactions;
+using api.DTOs.AccountDTOs;
 using api.DTOs.TransactionDTOs;
+using api.Helpers;
 using api.Interfaces;
+using api.Interfaces.AccountInterface;
 using api.Interfaces.ITransactionInterface;
+using api.Mappers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -17,10 +22,12 @@ namespace api.Controllers
     public class TransactionController : ControllerBase
     {
         private readonly ITransactionServiceInterface _service;
+        private readonly IAccountServiceInterface _accountService;
 
-        public TransactionController(ITransactionServiceInterface service)
+        public TransactionController(ITransactionServiceInterface service, IAccountServiceInterface accountService)
         {
             _service = service;
+            _accountService = accountService;
         }
 
         [HttpGet]
@@ -59,8 +66,10 @@ namespace api.Controllers
         {
             var newTransaction = await _service.CreateTransaction(createTransaction);
 
-            // apply static function
+            var updateAccount = await _accountService.UpdateAccountBalance(createTransaction.AccountId, createTransaction.Amount, createTransaction.IsIncome);
 
+            if(updateAccount == null) return NotFound("Account does not exist...");
+            
             return Ok(newTransaction);
         }
 

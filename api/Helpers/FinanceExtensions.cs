@@ -9,9 +9,9 @@ namespace api.Helpers
     {
         public static decimal CalculateNewBalance(this decimal currBalance, decimal amount, bool isIncome)
         {
-            return isIncome ? (currBalance + amount) : (currBalance - amount);
+            return isIncome ? (currBalance + amount) : (currBalance + -(amount));
         }
 
-
+                
     }
 }

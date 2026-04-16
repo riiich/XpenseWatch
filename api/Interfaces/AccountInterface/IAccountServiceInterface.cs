@@ -13,5 +13,6 @@ namespace api.Interfaces.AccountInterface
         Task<AccountResponseDTO?> GetAccountById(int id);
         Task<AccountResponseDTO> CreateAccount(string userId, AccountCreateDTO account);
         Task<AccountResponseDTO?> UpdateAccount(int id, AccountUpdateDTO accountUpdate);
+        Task<AccountResponseDTO?> UpdateAccountBalance(int accountId, decimal amount, bool isIncome);
     }
 }

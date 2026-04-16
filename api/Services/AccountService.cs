@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.DTOs.AccountDTOs;
+using api.Helpers;
 using api.Interfaces.AccountInterface;
 using api.Mappers;
 using api.Models;
@@ -56,6 +57,15 @@ namespace api.Services
             await _repo.UpdateAccountAsync(id);
 
             return AccountMapper.AccountToAccountResponseDto(accountToBeUpdated);
+        }
+
+        public async Task<AccountResponseDTO?> UpdateAccountBalance(int accountId, decimal amount, bool isIncome)
+        {
+            var updatedAccount = await _repo.UpdateAccountBalanceAsync(accountId, amount, isIncome);
+
+            if(updatedAccount == null) return null;
+
+            return AccountMapper.AccountToAccountResponseDto(updatedAccount);
         }
     }
 }

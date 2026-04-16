@@ -13,5 +13,6 @@ namespace api.Interfaces.AccountInterface
         Task<Account?> GetAccountByIdAsync(int id);
         Task CreateAccountAsync(Account account);
         Task<Account?> UpdateAccountAsync(int id);        
+        Task<Account?> UpdateAccountBalanceAsync(int id, decimal amount, bool isIncome);
     }
 }

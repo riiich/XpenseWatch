@@ -28,6 +28,12 @@ namespace api.Data
             builder.Entity<Account>().Property(x => x.CreatedAt).HasDefaultValueSql("GETDATE()");
             builder.Entity<Goal>().Property(x => x.CreatedAt).HasDefaultValueSql("GETDATE()");
 
+            // configure way to store money
+            builder.Entity<Account>().Property(x => x.Balance).HasPrecision(18, 2);
+            builder.Entity<Goal>().Property(x => x.CurrentBalance).HasPrecision(18, 2);
+            builder.Entity<Goal>().Property(x => x.TargetBalance).HasPrecision(18, 2);
+            builder.Entity<Transaction>().Property(x => x.Amount).HasPrecision(18, 2);
+
             List<IdentityRole> roles = new List<IdentityRole>
             {
                 new IdentityRole
