@@ -18,7 +18,7 @@ export function AddTransactionForm({
     categories,
 }: AddTransactionFormProps) {
     const [tab, setTab] = useState<Tab>("manual");
-    const { selectedAccId, selectedCategoryId } = useApp();
+    const { selectedAccId, selectedCategoryId, getAccounts } = useApp();
 
     const [manualForm, setManualForm] = useState({
         transactionDate: new Date().toISOString().split("T")[0],
@@ -45,6 +45,7 @@ export function AddTransactionForm({
 
     const handleManualSubmit = async () => {
         if (!manualForm.description.trim() || !manualForm.amount) return;
+
         onAdd({ ...manualForm, amount: manualForm.amount });
         onClose();
 
@@ -52,9 +53,19 @@ export function AddTransactionForm({
 
         const res = await fetch("http://localhost:5095/api/transactions", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
             body: JSON.stringify(manualForm),
         });
+
+        const data = await res.json();
+
+        if (res.status === 400) alert("there is something wrong");
+		
+        // refetch the accounts to get the correct account balance instead of doing the math in the frontend
+        await getAccounts();
     };
 
     const handleFileUpload = async () => {
@@ -73,7 +84,8 @@ export function AddTransactionForm({
     };
 
     const inputCls =
-        "w-full px-3 py-2.5 rounded-lg bg-[#060c14] text-slate-100 border border-[#1e293b] text-[13px] focus:border-amber-400/50 focus:outline-none transition-colors";
+        "w-full px-3 py-2.5 rounded-lg bg-[#060c14] text-slate-100 border border-[#1e293b] text-[13px] " +
+        "focus:border-amber-400/50 focus:outline-none transition-colors";
 
     const labelCls =
         "text-[9px] tracking-[0.14em] text-slate-500 uppercase mb-1.5 block";

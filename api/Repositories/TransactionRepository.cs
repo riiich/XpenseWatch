@@ -45,7 +45,7 @@ namespace api.Repositories
                 TransactionDate = transactionCreate.TransactionDate ?? DateOnly.FromDateTime(DateTime.Today),
                 CreatedAt = DateTime.UtcNow,
                 EditDate = DateTime.UtcNow,
-                Amount = transactionCreate.Amount,
+                Amount = transactionCreate.IsIncome ? transactionCreate.Amount : -transactionCreate.Amount,
                 Currency = transactionCreate.Currency,
                 Description = transactionCreate.Description,
                 Notes = transactionCreate.Notes,

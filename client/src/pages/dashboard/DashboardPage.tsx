@@ -15,6 +15,7 @@ import type { TabType } from "../../types";
 export default function DashboardPage() {
     const {
         addAccount,
+        transactions,
         addTransaction,
         // deleteTransaction,
         categories,
@@ -23,8 +24,6 @@ export default function DashboardPage() {
         isLoading,
     } = useApp();
     const account = useSelectedAccount();
-
-	console.log("account: ", account);
 
     const [activeTab, setActiveTab] = useState<TabType>("transactions");
     const [showAddTx, setShowAddTx] = useState(false);
@@ -39,9 +38,9 @@ export default function DashboardPage() {
     return (
         <>
             {isLoading ? (
-				<div className="flex justify-center items-center h-screen">
-					<h1 className="font-bold text-4xl">Loading...</h1>
-				</div>
+                <div className="flex justify-center items-center h-screen">
+                    <h1 className="font-bold text-4xl">Loading...</h1>
+                </div>
             ) : (
                 <div className="flex h-screen bg-[#060c14] overflow-hidden">
                     <Sidebar onAddAccount={() => setShowAddAcc(true)} />
@@ -105,56 +104,56 @@ export default function DashboardPage() {
                         </div>
 
                         {/* Tab content */}
-                        {/* {activeTab === "transactions" && (
-                    <div className="animate-fade-in">
-                       {account.transactions.length === 0 || account.transactions === undefined ? (
-                            <div className="text-center py-20">
-                                <div className="text-6xl text-[#1e293b] mb-4">
-                                    ◇
-                                </div>
-                                <p className="text-slate-600 text-sm mb-5">
-                                    No transactions yet
-                                </p>
-                                <button
-                                    onClick={() => setShowAddTx(true)}
-                                    className="px-5 py-2.5 rounded-xl bg-[#0f172a] border border-[#1e293b] text-amber-400 text-[12px] hover:bg-[#111d2e] transition-colors"
-                                >
-                                    Add your first transaction
-                                </button>
-                            </div>
-                        ) : (
-                            <>
-                                {/* Column headers */}
-                        {/* <div className="flex items-center gap-3 px-3 pb-2 border-b border-[#1e293b] mb-1">
-                                    <span className="text-[9px] tracking-[0.12em] text-slate-600 w-14">
-                                        DATE
-                                    </span>
-                                    <span className="w-1.5" />
-                                    <span className="text-[9px] tracking-[0.12em] text-slate-600 flex-1">
-                                        DESCRIPTION
-                                    </span>
-                                    <span className="text-[9px] tracking-[0.12em] text-slate-600 w-24 hidden sm:block">
-                                        CATEGORY
-                                    </span>
-                                    <span className="text-[9px] tracking-[0.12em] text-slate-600 w-28 text-right">
-                                        AMOUNT
-                                    </span>
-                                    <span className="w-6" />
-                                </div> */}
+                        {activeTab === "transactions" && (
+                            <div className="animate-fade-in">
+                                {transactions.length === 0 ||
+                                transactions === undefined ? (
+                                    <div className="text-center py-20">
+                                        <div className="text-6xl text-[#1e293b] mb-4">
+                                            ◇
+                                        </div>
+                                        <p className="text-slate-600 text-sm mb-5">
+                                            No transactions yet
+                                        </p>
+                                        <button
+                                            onClick={() => setShowAddTx(true)}
+                                            className="px-5 py-2.5 rounded-xl bg-[#0f172a] border border-[#1e293b] text-amber-400 text-[12px] hover:bg-[#111d2e] transition-colors"
+                                        >
+                                            Add your first transaction
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <>
+                                        {/* Column headers */}
+                                        <div className="flex items-center gap-3 px-3 pb-2 border-b border-[#1e293b] text-slate-100 mb-1">
+                                            <span className="text-[11px] tracking-[0.12em] w-14">
+                                                DATE
+                                            </span>
+                                            <span className="w-20" />
+                                            <span className="text-[11px] tracking-[0.12em] flex-1">
+                                                DESCRIPTION
+                                            </span>
+                                            <span className="text-[11px] tracking-[0.12em] w-1/6 sm:block">
+                                                CATEGORY
+                                            </span>
+                                            <span className="text-[11px] tracking-[0.12em] w-28 text-right">
+                                                AMOUNT
+                                            </span>
+                                        </div>
 
-                        {/* {account.transactions.map((tx) => (
-                                    <TransactionRow
-                                        key={tx.id}
-                                        transaction={tx}
-                                        onDelete={(id) =>
-                                            deleteTransaction(selectedAccId, id)
-                                        }
-                                    />
-                                ))} */}
-                        {/* </> */}
-                        {/* )} */}
-                        {/* </div> */}
-                        {/* )}  */}
+                                        {transactions.map((t) => (
+                                            <TransactionRow
+                                                key={t.id}
+                                                transaction={t}
+                                                // onDelete={(id) =>
+                                                //     deleteTransaction(selectedAccId, id)
+                                                // }
+                                            />
+                                        ))}
+                                    </>
+                                )}
+                            </div>
+                        )}
 
                         {activeTab === "charts" && (
                             <AnalyticsTab account={account} />

@@ -51,7 +51,7 @@ namespace api.Controllers
         }
 
         [HttpGet("{id}")]
-
+        [Authorize]
         public async Task<IActionResult> GetTransactionById([FromRoute] int id)
         {
             var transaction = await _service.GetTransactionById(id);
@@ -62,6 +62,7 @@ namespace api.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> CreateTransaction([FromBody] TransactionCreateDTO createTransaction)
         {
             var newTransaction = await _service.CreateTransaction(createTransaction);

@@ -12,6 +12,7 @@ export const shortDate = (dateStr: string) =>
     new Date(dateStr).toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",
+        year: "numeric"
     });
 
 export const randomId = () => Math.random();

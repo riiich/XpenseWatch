@@ -6,13 +6,14 @@ interface GoalBannerProps {
 }
 
 export function GoalBanner({ account }: GoalBannerProps) {
-    if (account.type === "credit" || 100/*account.goal*/ <= 0) return null;
+    if (account.type === "credit") return null;
 
     const pct = Math.min((account.balance / 10000/*account.goal*/) * 100, 100);
     const remaining = 10000/*account.goal*/ - account.balance;
 
     return (
-        <div className="bg-gradient-to-br from-[#0f1e35] to-[#111827] border border-[#1e293b] rounded-xl px-6 py-5 mb-6 animate-fade-in">
+        <div className="bg-gradient-to-br from-[#0f1e35] to-[#111827] border border-[#1e293b] 
+                        rounded-xl px-6 py-5 mb-6 animate-fade-in">
             {/* Top row */}
             <div className="flex justify-between mb-4">
                 <div>
