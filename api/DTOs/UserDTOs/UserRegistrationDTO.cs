@@ -15,8 +15,8 @@ namespace api.DTOs.UserDTOs
         [Required(ErrorMessage = "Username cannot be empty!")]
         public string? Username { get; set; }
         [Required(ErrorMessage = "Email cannot be empty!")]
-        // [EmailAddress(ErrorMessage = "Needs to be a valid email!")]
-        [RegularExpression(@"^[^@\s]+@[^@\s]+\.[a-zA-Z]${2,}$", ErrorMessage = "Email must have a valid domain extension (eg, .com, .org, ...)")]
+        [EmailAddress(ErrorMessage = "Needs to be a valid email!")]
+        [RegularExpression(@"^.+\..+$", ErrorMessage = "Email must have a valid domain extension (eg, .com, .org, ...)")]
         public string? Email { get; set; } = string.Empty;
         [Required]
         public string? Password { get; set; }
