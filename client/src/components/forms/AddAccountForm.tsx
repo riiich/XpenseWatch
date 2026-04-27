@@ -1,7 +1,6 @@
 import { useState } from "react";
 import type { Account, AccountType } from "../../types";
 import { CURRENCIES, ACCOUNT_TYPE_LABELS } from "../../lib/constants";
-import { randomId } from "../../lib/utils";
 import { Modal } from "../ui/Modal";
 import { useApp } from "@/context/AppContext";
 
@@ -46,7 +45,8 @@ export function AddAccountForm({ onClose }: AddAccountFormProps) {
     };
 
     const inputCls =
-        "w-full px-3 py-2.5 rounded-lg bg-[#060c14] text-slate-100 border border-[#1e293b] text-[12px] focus:border-amber-400/50 focus:outline-none transition-colors";
+        "w-full px-3 py-2.5 rounded-lg bg-[#060c14] text-slate-100 border border-[#1e293b] text-[12px] " +
+        "focus:border-amber-400/50 focus:outline-none transition-colors";
 
     const labelCls =
         "text-[9px] tracking-[0.14em] text-slate-500 uppercase mb-1.5 block";

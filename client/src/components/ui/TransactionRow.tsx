@@ -51,7 +51,7 @@ export function TransactionRow({ transaction: tx }: TransactionRowProps) {
                     </span>
                 ) : (
                     <span className="text-red-400">
-                        − {fmt(tx.amount, tx.currency)}
+                        {fmt(tx.amount, tx.currency)}
                     </span>
                 )}
             </span>

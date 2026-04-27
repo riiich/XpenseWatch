@@ -13,6 +13,7 @@ interface AppContextValue {
     categories: Category[];
     transactions: Transaction[];
     getAccounts: () => Promise<void>;
+    getTransactions: () => Promise<void>;
     selectedAccId: number;
     setSelectedAccId: (id: number) => void;
     selectedCategoryId: number | null;
@@ -120,6 +121,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         }));
 
         setTransactions(transactionData);
+        setIsLoading(false);
     };
 
     // immediately fetch the accounts and categories on load
@@ -182,6 +184,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
                 categories,
                 transactions,
                 getAccounts,
+                getTransactions,
                 selectedAccId,
                 setSelectedAccId,
                 selectedCategoryId,
