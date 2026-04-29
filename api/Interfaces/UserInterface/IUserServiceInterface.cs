@@ -14,6 +14,6 @@ namespace api.Interfaces
         // using IEnumberable instead of list b/c it's read-only list
         Task<IEnumerable<UserResponseDTO>> GetAllUsers();
         Task<UserResponseDTO?> GetUserById(string id);
-        Task<(UserResponseDTO?, IEnumerable<string>? errors)> CreateUser(UserRegistrationDTO userRegister);
+        Task<(User?, IEnumerable<string>? errors)> CreateUser(UserRegistrationDTO userRegister);
     }
 }

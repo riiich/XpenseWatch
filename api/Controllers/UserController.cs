@@ -1,11 +1,13 @@
 using api.DTOs.UserDTOs;
 using api.Interfaces;
 using api.Interfaces.ITokenServiceInterface;
+using api.Mappers;
 using api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 
 namespace api.Controllers
 {
@@ -52,28 +54,20 @@ namespace api.Controllers
         public async Task<IActionResult> Register(UserRegistrationDTO userRegister)
         {
             if(!ModelState.IsValid) return BadRequest(ModelState);
-
-            var newUser = new User
-            {
-                FirstName = userRegister.FirstName,
-                LastName = userRegister.LastName,
-                UserName = userRegister.Username,
-                Email = userRegister.Email
-            };
-
-            var createdUser = await _userService.CreateUser(userRegister);
-
+        
             if(!userRegister.Email.Contains("."))
                 return BadRequest(new { errorMsg = "Email must contain a domain extension. (eg. .com, .org, ...)", code = "INVALID_EMAIL" });
 
-            if(createdUser.errors != null) return StatusCode(500, createdUser.errors);
+            var (createdUser, errors) = await _userService.CreateUser(userRegister);
+        
+            if(errors != null) return BadRequest(new {errorMsg = "Registration failed", errors = errors});
             
-            return CreatedAtAction(nameof(GetUserById), new { id = newUser.Id }, new UserLoginResponseDTO
-            {
-                Email = newUser.Email,
-                Username = newUser.UserName, 
-                Token = await _tokenService.CreateToken(newUser)
-            });
+            return Ok(new {msg = "yessir"});
+            // return CreatedAtAction(nameof(GetUserById), new { id = createdUser.Id }, new UserRegistrationResponseDTO
+            // {
+            //     Email = createdUser.Email,
+            //     Username = createdUser.UserName, 
+            // });
         }
 
         [HttpPost("login")]

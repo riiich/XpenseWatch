@@ -45,7 +45,7 @@ namespace api.Services
             return UserMapper.UserToUserResponseDto(user);
         }
 
-        public async Task<(UserResponseDTO?, IEnumerable<string>? errors)> CreateUser(UserRegistrationDTO userRegistered)
+        public async Task<(User?, IEnumerable<string>? errors)> CreateUser(UserRegistrationDTO userRegistered)
         {
             var newUser = UserMapper.FromRegistrationDtoToUser(userRegistered);
 
@@ -76,8 +76,11 @@ namespace api.Services
 
             var newAccount = await _accountService.CreateAccount(newUser.Id, defaultCheckingsAccount);
 
+            // throw an error if it fails to create an account
+            // if(newAccount == null) 
+            //     return (createdUser, {err: "failed to create account"});
 
-            return (UserMapper.UserToUserResponseDto(newUser), null);
+            return (newUser, null);
         }
     }
 }
