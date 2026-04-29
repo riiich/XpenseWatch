@@ -40,17 +40,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         const data = await res.json();
 
-        if (res.ok && data.token !== undefined) {
+        if (res.ok) {
             setAuthed(true);
-            localStorage.setItem("token", data.token);
             return { status: res.status, success: true, data: data };
         } else {
             return {
-                isSuccess: false,
+                success: false,
                 status: res.status,
                 code: data.code,
                 errorMsg: data.errorMsg,
-                errors: data,
+                errors: data.errors ?? [],
             };
         }
     };
@@ -67,7 +66,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         const data = await res.json();
 
-        if (res.ok && data.token !== undefined) {
+        if (res.ok) {
             setAuthed(true);
             localStorage.setItem("token", data.token);
             return {
@@ -77,8 +76,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             };
         } else {
             return {
-                success: false,
 				status: res.status,
+                isSuccess: false,
 				errorMsg: data.errorMsg
             };
         }

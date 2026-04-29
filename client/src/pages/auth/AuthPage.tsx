@@ -34,14 +34,22 @@ export default function AuthPage() {
 		}
 
 		const res = await register(firstName, lastName, email, registerUsername, registerPassword);
-
-		if (!res.success || res.code === "INVALID_EMAIL") {
-			if (res.data.length > 0) setUserRegisterErrors([...userRegisterErrors, ...res.errors]);
+		console.log("res: ", res);
+		
+		if (!res.isSuccess) {
+			if (res.data.length > 0) 
+				setUserRegisterErrors([...userRegisterErrors, ...res.errors]);
 
 			setErrorMsg(res.errorMsg);
 		}
 
-		setIsLoading(false);
+		console.log("res in AuthPage: ", res);
+
+		setIsLoading(false);		
+
+		// once registered, move over to the login tab
+		// if(res.ok)
+		// 	setView("login");
 	};
 
 	const handleLogin = async (e: React.FormEvent) => {

@@ -47,7 +47,7 @@ export function TransactionRow({ transaction: tx }: TransactionRowProps) {
             >
                 {tx.isIncome ? (
                     <span className="text-emerald-400">
-                        + {fmt(tx.amount, tx.currency)}
+                        +{fmt(tx.amount, tx.currency)}
                     </span>
                 ) : (
                     <span className="text-red-400">
