@@ -27,7 +27,7 @@ export default function AuthPage() {
 		e.preventDefault();
 
 		setIsLoading(true);
-        
+
 		if (registerPassword !== confirmPassword) {
 			alert("Please confirm that your passwords match!");
 			return;
@@ -35,21 +35,22 @@ export default function AuthPage() {
 
 		const res = await register(firstName, lastName, email, registerUsername, registerPassword);
 		console.log("res: ", res);
-		
+
 		if (!res.isSuccess) {
-			if (res.data.length > 0) 
-				setUserRegisterErrors([...userRegisterErrors, ...res.errors]);
+			if (res.data.length > 0) setUserRegisterErrors([...userRegisterErrors, ...res.errors]);
 
 			setErrorMsg(res.errorMsg);
 		}
 
 		console.log("res in AuthPage: ", res);
 
-		setIsLoading(false);		
+		setIsLoading(false);
 
 		// once registered, move over to the login tab
-		// if(res.ok)
-		// 	setView("login");
+		if (res.status === 201) {
+			setView("login");
+			return;
+		}
 	};
 
 	const handleLogin = async (e: React.FormEvent) => {

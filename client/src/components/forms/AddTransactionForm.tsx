@@ -28,6 +28,7 @@ export function AddTransactionForm({ onClose, onAdd, categories }: AddTransactio
 		accountId: selectedAccId,
 		categoryId: selectedCategoryId,
 		isIncome: false, // used to determine whether money is coming in or out
+		isCredit: false,
 		isManual: true,
 	});
 
@@ -120,10 +121,13 @@ export function AddTransactionForm({ onClose, onAdd, categories }: AddTransactio
 						<select
 							className={inputCls}
 							value={manualForm.type}
-							onChange={(e) => set("type", e.target.value as "debit" | "credit")}
+							onChange={(e) => (
+								set("type", e.target.value as "debit" | "credit"),
+								e.target.value === "debit" ? set("isCredit", false) : set("isCredit", true)
+							)}
 						>
-							<option value="debit">Debit (Expense)</option>
-							<option value="credit">Credit (Income)</option>
+							<option value="debit">Debit</option>
+							<option value="credit">Credit</option>
 						</select>
 					</div>
 

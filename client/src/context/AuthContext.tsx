@@ -41,7 +41,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const data = await res.json();
 
         if (res.ok) {
-            setAuthed(true);
             return { status: res.status, success: true, data: data };
         } else {
             return {
