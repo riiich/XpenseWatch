@@ -22,6 +22,7 @@ namespace api.Models
         public string? Description { get; set; }
         public string? Notes { get; set; }
         public bool IsIncome { get; set; }
+        public bool IsCredit { get; set; }
         public bool IsManual { get; set; }  // true = user manual entry, false = parsed by PDF
         public bool IsDeleted { get; set; } // for soft delete purposes in case the user accidentally deletes
     }

@@ -50,6 +50,7 @@ namespace api.Repositories
                 Description = transactionCreate.Description,
                 Notes = transactionCreate.Notes,
                 IsIncome = transactionCreate.IsIncome,
+                IsCredit = transactionCreate.IsCredit,
                 IsManual = transactionCreate.IsManual,
                 IsDeleted = false,
             };
@@ -60,6 +61,7 @@ namespace api.Repositories
             return newTransaction;
         }
 
+        // WORK ON THIS
         public async Task<Transaction?> UpdateTransactionAsync(int id, Transaction transactionUpdate)
         {
             transactionUpdate.EditDate = DateTime.UtcNow;

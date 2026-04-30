@@ -12,6 +12,7 @@ namespace api.DTOs.TransactionDTOs
         public DateOnly? TransactionDate { get; set; }
         public decimal Amount { get; set; }
         public required string Currency { get; set; }
+        public bool IsCredit { get; set; }
         public string? Description { get; set; }
         public string? Notes { get; set; }
     }

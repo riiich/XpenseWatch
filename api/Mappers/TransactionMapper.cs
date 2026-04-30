@@ -23,6 +23,7 @@ namespace api.Mappers
                 Description = transaction.Description,
                 Notes = transaction.Notes,
                 IsIncome = transaction.IsIncome,
+                IsCredit = transaction.IsCredit,
                 IsManual = transaction.IsManual,
                 IsDeleted = transaction.IsDeleted
             };
@@ -43,6 +44,7 @@ namespace api.Mappers
                 EditDate = DateTime.Now,
                 CreatedAt = DateTime.Now,
                 IsIncome = createDto.IsIncome,
+                IsCredit = createDto.IsCredit,
                 IsManual = createDto.IsManual,
                 IsDeleted = false
             };
@@ -58,6 +60,7 @@ namespace api.Mappers
             transactionToBeUpdated.Description = updateDto.Description;
             transactionToBeUpdated.Notes = updateDto.Notes;
             transactionToBeUpdated.EditDate = DateTime.Now; // local time (PST)
+            transactionToBeUpdated.IsCredit = updateDto.IsCredit;
 
             return transactionToBeUpdated;
             

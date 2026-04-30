@@ -62,12 +62,11 @@ namespace api.Controllers
         
             if(errors != null) return BadRequest(new {errorMsg = "Registration failed", errors = errors});
             
-            return Ok(new {msg = "yessir"});
-            // return CreatedAtAction(nameof(GetUserById), new { id = createdUser.Id }, new UserRegistrationResponseDTO
-            // {
-            //     Email = createdUser.Email,
-            //     Username = createdUser.UserName, 
-            // });
+            return CreatedAtAction(nameof(GetUserById), new { id = createdUser.Id }, new UserRegistrationResponseDTO
+            {
+                Email = createdUser.Email,
+                Username = createdUser.UserName, 
+            });
         }
 
         [HttpPost("login")]

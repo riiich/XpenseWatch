@@ -52,7 +52,9 @@ namespace api.Services
 
         public async Task<TransactionResponseDTO> CreateTransaction(TransactionCreateDTO transactionCreate)
         {
-            var newTransaction = await _transactionRepo.CreateTransactionAsync(TransactionMapper.TransactionCreateDtoToTransaction(transactionCreate));
+            var newTransaction = await _transactionRepo
+                                            .CreateTransactionAsync(TransactionMapper
+                                                                        .TransactionCreateDtoToTransaction(transactionCreate));
             
             return TransactionMapper.TransactionToTransactionResponseDto(newTransaction);
         }
