@@ -65,9 +65,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         const data = await res.json();
 
-        if (res.ok) {
-            setAuthed(true);
+        if (res.status === 200) {
             localStorage.setItem("token", data.token);
+            setAuthed(true);
             return {
                 status: res.status,
                 isSuccess: true,

@@ -18,6 +18,7 @@ export default function AuthPage() {
 	const [registerUsername, setRegisterUsername] = useState("");
 	const [registerPassword, setRegisterPassword] = useState("");
 	const [confirmPassword, setConfirmPassword] = useState("");
+	const [showPassword, setShowPassword] = useState(false);
 
 	const inputCls =
 		"w-full px-4 py-3 rounded-xl bg-[#060c14] text-slate-100 border border-[#1e293b] text-[12px] " +
@@ -60,7 +61,7 @@ export default function AuthPage() {
 
 		const res = await login(loginUsername, loginPassword);
 
-		if (!res.isSuccess) {
+		if (res.success !== 200) {
 			setErrorMsg(res.errorMsg);
 		}
 
@@ -93,6 +94,10 @@ export default function AuthPage() {
 					))}
 				</div>
 
+				<p className="text-red-400 text-[12px]">
+					{errorMsg}
+				</p>
+			
 				{/* Form */}
 				<p className="text-xs text-red-400">{errorMsg}</p>
 				<>
