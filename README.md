@@ -5,4 +5,4 @@ Tech Stack:
  - React, TypeScript
  - .NET
  - SQL Server
- - Gemini LLM
+
