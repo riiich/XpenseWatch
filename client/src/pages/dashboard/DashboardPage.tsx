@@ -167,7 +167,6 @@ export default function DashboardPage() {
                     {showAddTx && (
                         <AddTransactionForm
                             onClose={() => setShowAddTx(false)}
-                            onAdd={(tx) => addTransaction(selectedAccId, tx)}
                             categories={categories}
                         />
                     )}

@@ -35,15 +35,12 @@ export default function AuthPage() {
 		}
 
 		const res = await register(firstName, lastName, email, registerUsername, registerPassword);
-		console.log("res: ", res);
 
 		if (!res.isSuccess) {
 			if (res.data.length > 0) setUserRegisterErrors([...userRegisterErrors, ...res.errors]);
 
 			setErrorMsg(res.errorMsg);
 		}
-
-		console.log("res in AuthPage: ", res);
 
 		setIsLoading(false);
 

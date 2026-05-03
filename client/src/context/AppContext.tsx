@@ -16,7 +16,7 @@ interface AppContextValue {
     getTransactions: () => Promise<void>;
     selectedAccId: number;
     setSelectedAccId: (id: number) => void;
-    selectedCategoryId: number | null;
+    selectedCategoryId: number;
     setSelectedCategoryId: (id: number) => void;
     addAccount: (acc: Account) => void;
     addTransaction: (accId: number, tx: Omit<Transaction, "id">) => void;
@@ -31,11 +31,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const [accounts, setAccounts] = useState<Account[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
     const [transactions, setTransactions] = useState<Transaction[]>([]);
-
     const [selectedAccId, setSelectedAccId] = useState<number>(0);
-    const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(
-        null,
-    );
+    const [selectedCategoryId, setSelectedCategoryId] = useState<number>(0);
 
     const addAccount = (acc: Account) => {
         setAccounts((prev) => [...prev, acc]);
@@ -66,8 +63,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
         setAccounts(accountData);
 
-        console.log("accountData; ", accountData);
-
         if (accountData.length > 0 && !selectedAccId) {
             setSelectedAccId(accountData[0].id); // have to select first account id so it can fetch the correct transactions
         }
@@ -94,6 +89,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         }));
 
         setCategories(categories);
+        setSelectedCategoryId(0);
     };
 
     const getTransactions = async () => {
@@ -130,8 +126,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
     // immediately fetch the accounts and categories on load
     useEffect(() => {
         getAccounts();
-        console.log("useEffect 1");
-        // getTransactions();
         getCategories();
     }, []);
 
@@ -140,9 +134,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
         if (!selectedAccId) return;
 
         getTransactions();
-        console.log("useEffect 2");
-
-        // setIsLoading(false);
     }, [selectedAccId]);
 
     const addTransaction = (accId: number, tx: Omit<Transaction, "id">) => {
