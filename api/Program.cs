@@ -17,6 +17,7 @@ using Microsoft.OpenApi;
 using Microsoft.OpenApi.Models;
 using api.Interfaces.CategoryInterface;
 using api.Interfaces.GoalInterface;
+using api.Interfaces.AI_Interface;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -116,6 +117,9 @@ builder.Services.AddScoped<ICategoryServiceInterface, CategoryService>();
 // Goal
 builder.Services.AddScoped<IGoalRepositoryInterface, GoalRepository>();
 builder.Services.AddScoped<IGoalServiceInterface, GoalService>();
+
+// AI
+builder.Services.AddScoped<IAIServiceInterface, AIService>();
 
 // Token for JWT
 builder.Services.AddScoped<ITokenServiceInterface, TokenService>();
