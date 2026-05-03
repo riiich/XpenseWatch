@@ -26,7 +26,6 @@ namespace api.Controllers
         {
             var categories = await _service.GetCategories();
             
-
             return Ok(categories);
         }
     }

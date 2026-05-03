@@ -1,7 +1,0 @@
-- display the transactions from each account
-- currently, you MUST select a category for a new transaction, otherwise it will return a 400 status code 
-- fix amount with the correct sign (+, -). right now it's displaying all -
-
-
-NOTABLE THINGS:
-- for now, it only works for USD
