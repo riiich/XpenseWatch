@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 
 namespace api.DTOs.AIDTOs
 {
-    public class AIUserDTO
+    public class AIFinancialRequestDTO
     {
-        
+      
     }
 }
