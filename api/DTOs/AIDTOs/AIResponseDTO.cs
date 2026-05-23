@@ -7,7 +7,7 @@ namespace api.DTOs.AIDTOs
 {
     public class AIResponseDTO
     {
-        string descriptionResponse { get; set; }
-        string financeAnalysis { get; set; }
+        // public string descriptionResponse { get; set; } = String.Empty;
+        public string financeAnalysis { get; set; } = String.Empty;
     }
 }

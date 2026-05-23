@@ -10,7 +10,7 @@ namespace api.Interfaces.AI_Interface
 {
     public interface IAIServiceInterface
     {
-        Task<string> testPrompt();
+        Task<AIResponseDTO?> testPrompt(int accId);
         // Task<AIResponseDTO> userPrompt(AIFinancialRequestDTO userPrompt);
         // Task<AIResponseDTO> getFinancialAnalysis(AIFinancialRequestDTO financialInfo);
         // Task<TransactionResponseDTO[]> aggregateTransactions(string userId);

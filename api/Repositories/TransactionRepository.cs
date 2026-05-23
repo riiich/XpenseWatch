@@ -27,7 +27,12 @@ namespace api.Repositories
 
         public async Task<List<Transaction>> GetTransactionsByAccountIdAsync(int accountId)
         {
-            return await _context.Transactions.Include(t => t.Account).Include(t => t.Category).Where(t => t.AccountId == accountId).ToListAsync();
+            return await _context.Transactions
+                                 .Include(t => t.Account)
+                                 .Include(t => t.Category)
+                                 .Where(t => t.AccountId == accountId)
+                                 .OrderByDescending(t => t.CreatedAt)
+                                 .ToListAsync();
         }
 
         public async Task<Transaction?> GetTransactionByIdAsync(int id)

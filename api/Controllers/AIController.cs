@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using api.Interfaces.AI_Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Client;
 
 namespace api.Controllers
 {
@@ -20,9 +21,12 @@ namespace api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> test()
+        [Authorize]
+        public async Task<IActionResult> GetAIAnalysis([FromQuery] int accId)
         {
-            return Ok(new { aiResponse = _aiService.testPrompt() });
+            var foo = await _aiService.testPrompt(accId);
+
+            return Ok(foo);
         }
     }
 }
