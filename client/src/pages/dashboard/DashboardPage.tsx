@@ -28,6 +28,8 @@ export default function DashboardPage() {
     const [activeTab, setActiveTab] = useState<TabType>("transactions");
     const [showAddTx, setShowAddTx] = useState(false);
     const [showAddAcc, setShowAddAcc] = useState(false);
+    const [insights, setInsights] = useState<Record<number, string>>({});
+    const [insightOpen, setInsightOpen] = useState<Record<number, boolean>>({});
 
     const TABS: { id: TabType; label: string }[] = [
         { id: "transactions", label: "Transactions" },
@@ -156,10 +158,17 @@ export default function DashboardPage() {
                         )}
 
                         {activeTab === "charts" && (
-                            <AnalyticsTab account={account} />
+                            <AnalyticsTab account={account} transactions={transactions} />
                         )}
                         {activeTab === "ai" && (
-                            <AIAdvisorTab account={account} />
+                            <AIAdvisorTab
+                                accounts={account}
+                                transactions={transactions}
+                                insight={insights[account.id] ?? ""}
+                                setInsight={(value) => setInsights(prev => ({ ...prev, [account.id]: value }))}
+                                open={insightOpen[account.id] ?? false}
+                                setOpen={(value) => setInsightOpen(prev => ({ ...prev, [account.id]: value }))}
+                            />
                         )}
                     </main>
 

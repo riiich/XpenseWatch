@@ -1,66 +1,68 @@
-import { useState, useMemo } from "react";
-import type { Account } from "../../types";
+import { useState, useMemo, SetStateAction, Dispatch } from "react";
+import type { Account, Transaction } from "../../types";
 import { fmt } from "../../lib/utils";
 import { ACCOUNT_TYPE_LABELS } from "../../lib/constants";
 
 interface AIAdvisorTabProps {
-    account: Account;
+    accounts: Account;
+    transactions: Transaction[];
+    insight: string;
+    setInsight: (value: string) => void;
+    open: boolean;
+    setOpen: (value: boolean) => void;
 }
 
-export function AIAdvisorTab({ account }: AIAdvisorTabProps) {
-    const [open, setOpen] = useState(false);
+export function AIAdvisorTab({ accounts, transactions, insight, setInsight, open, setOpen }: AIAdvisorTabProps) {
     const [loading, setLoading] = useState(false);
-    const [insight, setInsight] = useState<string>("");
 
-    const topCategory = useMemo(() => {
-        const totals: Record<string, number> = {};
-        account.transactions
-            .filter((t) => t.type === "debit")
-            .forEach((t) => {
-                totals[t.category] = (totals[t.category] ?? 0) + t.amount;
-            });
-        const sorted = Object.entries(totals).sort((a, b) => b[1] - a[1]);
-        return sorted[0] ?? null;
-    }, [account]);
+    // const topCategory = useMemo(() => {
+    //     const totals: Record<string, number> = {};
+    //     account.transactions
+    //         .filter((t) => t.type === "debit")
+    //         .forEach((t) => {
+    //             totals[t.category] = (totals[t.category] ?? 0) + t.amount;
+    //         });
+    //     const sorted = Object.entries(totals).sort((a, b) => b[1] - a[1]);
+    //     return sorted[0] ?? null;
+    // }, [account]);
 
     const totalSpend = useMemo(
         () =>
-            account.transactions
+            transactions
                 .filter((t) => t.type === "debit")
                 .reduce((s, t) => s + t.amount, 0),
-        [account],
+        [accounts],
     );
 
-    const pct =
-        account.goal > 0
-            ? ((account.saved / account.goal) * 100).toFixed(1)
-            : null;
+    // const pct =
+    //     account.goal > 0
+    //         ? ((account.saved / account.goal) * 100).toFixed(1)
+    //         : null;
 
     const fetchInsight = async () => {
         setLoading(true);
         setOpen(true);
         setInsight("");
 
-        const prompt = `The user has an expense tracker account named "${account.name}" (${ACCOUNT_TYPE_LABELS[account.type]}).
-                        Current balance: ${fmt(account.balance, account.currency)}.
-                        ${account.goal > 0 ? `Savings goal: ${fmt(account.goal)} — currently ${pct}% achieved.` : "No savings goal set."}
-                        Top spending category this month: ${topCategory ? `${topCategory[0]} at ${fmt(topCategory[1])}` : "none"}.
-                        Total spend across all transactions: ${fmt(totalSpend)}.
-                        Total transactions: ${account.transactions.length}.
+        console.log("Account ID: ", accounts.id);
 
-                        Give exactly 3 concise, specific, actionable financial insights to help this user improve their finances and reach 
-                        their goal faster. Be direct and data-driven. Format as 3 separate short paragraphs, each starting with a bolded 
-                        action title like **Title:** followed by the advice.`;
+        const res = await fetch(`http://localhost:5095/api/prompt?accId=${accounts.id}`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${localStorage.getItem("token")}`,
+            },
+        });
 
-        // make api call
-        
+        const data = await res.json();
+
+        setInsight(data.financeAnalysis);
 
         setLoading(false);
     };
 
     const handleClose = () => {
         setOpen(false);
-        setInsight("");
+        // setInsight("");
     };
 
     // Parse **Bold:** prefix into styled paragraphs
@@ -105,9 +107,6 @@ export function AIAdvisorTab({ account }: AIAdvisorTabProps) {
                                 AI Financial Advisor
                             </span>
                         </div>
-                        <p className="text-[11px] text-slate-500 tracking-wide">
-                            Powered by Claude · Analyzes your account data
-                        </p>
                     </div>
 
                     {!open ? (
@@ -130,15 +129,15 @@ export function AIAdvisorTab({ account }: AIAdvisorTabProps) {
                 </div>
 
                 {/* Context chips */}
-                <div className="flex flex-wrap gap-2 mb-6">
+                {/* <div className="flex flex-wrap gap-2 mb-6">
                     {[
                         {
                             label: "Balance",
-                            value: fmt(account.balance, account.currency),
+                            value: fmt(accounts.balance, accounts),
                         },
                         {
                             label: "Spend",
-                            value: fmt(totalSpend, account.currency),
+                            value: fmt(totalSpend, accounts),
                         },
                         ...(topCategory
                             ? [{ label: "Top Category", value: topCategory[0] }]
@@ -159,7 +158,7 @@ export function AIAdvisorTab({ account }: AIAdvisorTabProps) {
                             </span>
                         </div>
                     ))}
-                </div>
+                </div> */}
 
                 {/* Loading state */}
                 {open && loading && (
