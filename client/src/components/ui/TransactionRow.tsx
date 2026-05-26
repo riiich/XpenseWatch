@@ -30,7 +30,7 @@ export function TransactionRow({ transaction: tx, onDelete }: TransactionRowProp
                     </span>
                 )}
             </div>
-			
+
             {/* Category */}
             <span className="text-[12px] text-slate-500 tracking-wide w-1/7 shrink-0 sm:block">
                 {tx.categoryName}
@@ -56,7 +56,7 @@ export function TransactionRow({ transaction: tx, onDelete }: TransactionRowProp
             {/* Delete */}
             <button
                 onClick={() => onDelete(tx.id)}
-                className="text-red-400 hover:text-rose-300 text-2xl leading-none w-6 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                className="text-red-400 text-xl hover:text-2xl leading-none w-6 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
                 aria-label="Delete transaction"
             >
                 🗑️
