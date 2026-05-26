@@ -1,16 +1,13 @@
 import type { Transaction } from "../../types";
-import { DEFAULT_CATEGORIES } from "../../lib/constants";
 import { fmt, shortDate } from "../../lib/utils";
 
 interface TransactionRowProps {
     transaction: Transaction;
-    // onDelete: (id: string) => void;
+    onDelete: (id: number) => void;
 }
 
-export function TransactionRow({ transaction: tx }: TransactionRowProps) {
+export function TransactionRow({ transaction: tx, onDelete }: TransactionRowProps) {
     const isCredit = tx.type === "credit";
-    const catColor =
-        DEFAULT_CATEGORIES.find((c) => c.name === tx.categoryName) ?? "#64748b";
 
     return (
         <div className="flex items-center gap-10 px-3 py-3 rounded-lg border-b border-[#0f172a] hover:bg-[#0a1422] transition-colors group">
@@ -51,19 +48,19 @@ export function TransactionRow({ transaction: tx }: TransactionRowProps) {
                     </span>
                 ) : (
                     <span className="text-red-400">
-                        {fmt(tx.amount, tx.currency)}
+                        -{fmt(tx.amount, tx.currency)}
                     </span>
                 )}
             </span>
 
             {/* Delete */}
-            {/* <button
+            <button
                 onClick={() => onDelete(tx.id)}
-                className="text-slate-700 hover:text-rose-400 text-lg leading-none w-6 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                className="text-red-400 hover:text-rose-300 text-2xl leading-none w-6 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
                 aria-label="Delete transaction"
             >
-                ×
-            </button> */}
+                🗑️
+            </button>
         </div>
     );
 }

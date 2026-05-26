@@ -33,5 +33,18 @@ export interface Category {
     name: string;
 }
 
+export interface Goal {
+    id: number;
+    title: string;
+    accountId: number;
+    description?: string;
+    targetGoal: number;
+}
+
+export interface AnalyticsTabProps {
+    account: Account;
+    transactions: Transaction[];
+}
+
 export type TabType = "transactions" | "charts" | "ai";
 export type AuthView = "login" | "signup";

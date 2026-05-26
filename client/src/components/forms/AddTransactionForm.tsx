@@ -84,7 +84,7 @@ export function AddTransactionForm({ onClose, categories }: AddTransactionFormPr
 	};
 
 	const inputCls =
-		"w-full px-3 py-2.5 rounded-lg bg-[#060c14] text-slate-100 border border-[#1e293b] text-[13px] " +
+		"w-full px-3 py-2.5 rounded-lg	 bg-[#060c14] text-slate-100 border border-[#1e293b] text-[13px] " +
 		"focus:border-amber-400/50 focus:outline-none transition-colors";
 
 	const labelCls = "text-[9px] tracking-[0.14em] text-slate-500 uppercase mb-1.5 block";
@@ -110,7 +110,7 @@ export function AddTransactionForm({ onClose, categories }: AddTransactionFormPr
 				<div className="grid grid-cols-2 gap-3.5">
 					{/* Date */}
 					<div>
-						<label className={labelCls}>Date</label>
+						<label className={labelCls}>Date *</label>
 						<input
 							className={inputCls}
 							type="date"
@@ -121,7 +121,7 @@ export function AddTransactionForm({ onClose, categories }: AddTransactionFormPr
 
 					{/* Type */}
 					<div>
-						<label className={labelCls}>Type</label>
+						<label className={labelCls}>Type *</label>
 						<select
 							className={inputCls}
 							value={manualForm.type}
@@ -137,7 +137,7 @@ export function AddTransactionForm({ onClose, categories }: AddTransactionFormPr
 
 					{/* Income or Expense */}
 					<div>
-						<label className={labelCls}>Income or Expense</label>
+						<label className={labelCls}>Income or Expense *</label>
 						<select
 							className={inputCls}
 							value={String(manualForm.isIncome)}
@@ -150,7 +150,7 @@ export function AddTransactionForm({ onClose, categories }: AddTransactionFormPr
 
 					{/* Amount + Currency */}
 					<div className="col-span-2">
-						<label className={labelCls}>Amount</label>
+						<label className={labelCls}>Amount *</label>
 						<div className="flex gap-2 w-fit">
 							<select
 								className={inputCls}
@@ -171,21 +171,9 @@ export function AddTransactionForm({ onClose, categories }: AddTransactionFormPr
 						</div>
 					</div>
 
-					{/* Description */}
-					<div className="col-span-2">
-						<label className={labelCls}>Description</label>
-						<input
-							className={inputCls}
-							type="text"
-							placeholder="e.g. Whole Foods"
-							value={manualForm.description}
-							onChange={(e) => set("description", e.target.value)}
-						/>
-					</div>
-
 					{/* Category */}
 					<div className="col-span-2">
-						<label className={labelCls}>Category</label>
+						<label className={labelCls}>Category *</label>
 						{isSubmitted && manualForm.categoryId === 0 && (
 							<p className="text-red-400">A category is required...</p>
 						)}
@@ -215,6 +203,18 @@ export function AddTransactionForm({ onClose, categories }: AddTransactionFormPr
 								))}
 							</select>
 						</div>
+					</div>
+
+					{/* Description */}
+					<div className="col-span-2">
+						<label className={labelCls}>Description *</label>
+						<input
+							className={inputCls}
+							type="text"
+							placeholder="e.g. Whole Foods"
+							value={manualForm.description}
+							onChange={(e) => set("description", e.target.value)}
+						/>
 					</div>
 
 					{/* Notes */}

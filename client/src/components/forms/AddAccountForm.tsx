@@ -34,7 +34,6 @@ export function AddAccountForm({ onClose }: AddAccountFormProps) {
 				name: form.name.trim(),
 				type: form.type,
 				currency: form.currency,
-				balance: form.balance,
 			}),
 		});
 
@@ -96,7 +95,7 @@ export function AddAccountForm({ onClose }: AddAccountFormProps) {
 					</select>
 				</div>
 
-				{/* Balance */}
+				{/* Balance
 				<div className="col-span-2">
 					<label className={labelCls}>Balance</label>
 					<input
@@ -106,7 +105,7 @@ export function AddAccountForm({ onClose }: AddAccountFormProps) {
 						value={form.balance}
 						onChange={(e) => set("balance", parseFloat(e.target.value))}
 					/>
-				</div>
+				</div> */}
 
 				{/* Submit */}
 				<button
