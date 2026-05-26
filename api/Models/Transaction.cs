@@ -11,7 +11,7 @@ namespace api.Models
         public int Id { get; set; }
         public int? AccountId { get; set; }
         public Account? Account { get; set; }     // navigation property (objects don't get stored in DB)
-        public int? CategoryId { get; set; } = 18;
+        public int? CategoryId { get; set; } = 13;
         public Category? Category { get; set; } 
         public DateOnly? TransactionDate { get; set; }
         public DateTime CreatedAt { get; set; }
