@@ -12,6 +12,7 @@ namespace api.Interfaces.ITransactionInterface
         Task<List<Transaction>> GetTransactionsByAccountIdAsync(int accountId);
         Task<Transaction?> GetTransactionByIdAsync(int id);
         Task<Transaction> CreateTransactionAsync(Transaction transactionCreate);
+        Task<Transaction[]> CreateUploadTransactionAsync(List<Transaction> transactionsFromUpload);
         Task<Transaction?> UpdateTransactionAsync(int id, Transaction transactionUpdate);
         Task<Transaction?> DeleteTransactionAsync(int id);
     }

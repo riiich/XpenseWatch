@@ -1,13 +1,19 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
+using api.DTOs.StatementUploadDTOs;
 using api.DTOs.TransactionDTOs;
 using api.Interfaces.AccountInterface;
 using api.Interfaces.CategoryInterface;
 using api.Interfaces.ITransactionInterface;
 using api.Mappers;
+using api.Migrations;
 using api.Models;
+using CsvHelper;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace api.Services
@@ -19,8 +25,8 @@ namespace api.Services
         IAccountServiceInterface _accountService;
         ICategoryServiceInterface _categoryService;
 
-        public TransactionService(ITransactionRepositoryInterface repo, 
-                                  IAccountServiceInterface accountService, 
+        public TransactionService(ITransactionRepositoryInterface repo,
+                                  IAccountServiceInterface accountService,
                                   ICategoryServiceInterface categoryService)
         {
             _transactionRepo = repo;
@@ -47,16 +53,66 @@ namespace api.Services
 
             if (transaction == null) return null;
 
-            return TransactionMapper.TransactionToTransactionResponseDto(transaction);   
+            return TransactionMapper.TransactionToTransactionResponseDto(transaction);
         }
 
         public async Task<TransactionResponseDTO> CreateTransaction(TransactionCreateDTO transactionCreate)
         {
             var newTransaction = await _transactionRepo
-                                            .CreateTransactionAsync(TransactionMapper
-                                                                        .TransactionCreateDtoToTransaction(transactionCreate));
-            
+                                            .CreateTransactionAsync(TransactionMapper.TransactionCreateDtoToTransaction(transactionCreate));
+
             return TransactionMapper.TransactionToTransactionResponseDto(newTransaction);
+        }
+
+        public async Task<TransactionResponseDTO[]?> CreateTransactionUpload(TransactionUploadDTO transactionCreateUpload)
+        {
+            var transactions = new List<Transaction>();
+
+            try
+            {
+                // extract the data from the csv
+                using var reader = new StreamReader(transactionCreateUpload.PdfTransaction.OpenReadStream());
+                using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
+
+                var records = csv.GetRecords<dynamic>();
+
+                var currAccount = await _accountService.GetAccountById(transactionCreateUpload.AccountId);
+
+                if(currAccount == null) return null;
+
+                foreach (var record in records)
+                {  
+                    var dict = (IDictionary<string, object>)record;
+                    var date = DateOnly.Parse(dict["Transaction Date"].ToString());
+                    var description = dict["Description"].ToString();
+                    var category = dict["Category"].ToString();
+                    var type = dict["Type"].ToString();
+                    var amount = decimal.Parse(dict["Amount"].ToString());
+
+                    var chaseTransaction = new ChaseStatementTransactionDTO
+                    {
+                        AccountId = transactionCreateUpload.AccountId,
+                        TransactionDate = date,
+                        Description = description,
+                        Type = type,
+                        Amount = amount
+                    };
+
+                    transactions.Add(Mappers.TransactionMapper.TransactionUploadDtoToTransaction(chaseTransaction, currAccount?.Type == "Credit"));
+                }
+
+                var transactionsModel = await _transactionRepo.CreateUploadTransactionAsync(transactions);
+                
+                return transactionsModel.Select(t => Mappers.TransactionMapper.TransactionToTransactionResponseDto(t)).ToArray();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"There was an error: {e}");
+            }
+
+            return null;
+
+            // map the data over to a transaction
         }
 
         public async Task<TransactionResponseDTO?> UpdateTransaction(int id, TransactionUpdateDTO transactionUpdate)
@@ -76,7 +132,7 @@ namespace api.Services
         {
             var deletedTransaction = await _transactionRepo.DeleteTransactionAsync(id);
 
-            if(deletedTransaction == null) return null;
+            if (deletedTransaction == null) return null;
 
             return TransactionMapper.TransactionToTransactionResponseDto(deletedTransaction);
         }

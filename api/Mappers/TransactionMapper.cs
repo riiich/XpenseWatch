@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using api.DTOs.StatementUploadDTOs;
 using api.DTOs.TransactionDTOs;
 using api.Models;
 
@@ -9,7 +10,7 @@ namespace api.Mappers
 {
     public class TransactionMapper
     {
-        public static TransactionResponseDTO TransactionToTransactionResponseDto(Models.Transaction transaction)
+        public static TransactionResponseDTO TransactionToTransactionResponseDto(Transaction transaction)
         {
             return new TransactionResponseDTO
             {
@@ -33,7 +34,6 @@ namespace api.Mappers
         {
             return new Transaction
             { 
-
                 Amount = createDto.Amount,
                 AccountId = createDto.AccountId,
                 CategoryId = createDto.CategoryId,
@@ -66,12 +66,25 @@ namespace api.Mappers
             
         }
 
-        // public static Transaction TransactionUploadDtoToTransaction(IFormFile transactionFileUpload)
-        // {
-        //     return new Transaction
-        //     {
-                
-        //     };
-        // }
+        public static Transaction TransactionUploadDtoToTransaction(ChaseStatementTransactionDTO transactionFileUpload, bool isCredit)
+        {
+            if(transactionFileUpload.Type == "Payment") 
+                transactionFileUpload.Amount *= -1;
+
+            return new Transaction
+            {
+                Amount = transactionFileUpload.Amount,
+                AccountId = transactionFileUpload.AccountId,
+                Description = transactionFileUpload.Description,
+                Notes = "",
+                TransactionDate = transactionFileUpload.TransactionDate,
+                EditDate = DateTime.Now,
+                CreatedAt = DateTime.Now,
+                IsIncome = transactionFileUpload.Type != "Sale" && transactionFileUpload.Type != "Payment" && transactionFileUpload.Type != "Payment",
+                IsCredit = isCredit,
+                IsManual = false,
+                IsDeleted = false
+            };
+        }
     }
 }

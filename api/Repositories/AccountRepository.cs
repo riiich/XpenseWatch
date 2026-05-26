@@ -31,6 +31,7 @@ namespace api.Repositories
 
         public async Task CreateAccountAsync(Account newAccount)
         {
+            newAccount.Balance = 0;
             await _context.Accounts.AddAsync(newAccount);
             await _context.SaveChangesAsync();
         }

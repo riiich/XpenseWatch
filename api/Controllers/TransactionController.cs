@@ -14,6 +14,7 @@ using api.Mappers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Client;
 
 namespace api.Controllers
 {
@@ -74,6 +75,23 @@ namespace api.Controllers
             return Ok(newTransaction);
         }
 
+        [HttpPost("upload")]
+        [Authorize]
+        public async Task<IActionResult> CreateUploadTransaction([FromForm] TransactionUploadDTO statement)
+        {
+            if(statement == null || statement.PdfTransaction.ContentType != "text/csv")
+                return StatusCode(415, "Unsupported file type... Please upload a CSV file.");
+
+            var extension = Path.GetExtension(statement.PdfTransaction.FileName);
+            if(extension.ToLower() != ".csv")
+                return StatusCode(415, "Unsupported file type... Please upload a CSV file.");
+
+            // call service
+            var uploadedTransactions = await _service.CreateTransactionUpload(statement);
+
+            return Ok(uploadedTransactions);
+        }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateTransaction([FromRoute] int id, [FromBody] TransactionUpdateDTO updatedTransaction)
         {
@@ -85,6 +103,7 @@ namespace api.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> DeleteTransaction([FromRoute] int id)
         {
             var transactionDelete = await _service.DeleteTransaction(id);

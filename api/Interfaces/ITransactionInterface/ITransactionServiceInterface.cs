@@ -13,6 +13,7 @@ namespace api.Interfaces.ITransactionInterface
         Task<IEnumerable<TransactionResponseDTO>> GetTransactionsByAccountId(int accountId);
         Task<TransactionResponseDTO?> GetTransactionById(int id);
         Task<TransactionResponseDTO> CreateTransaction(TransactionCreateDTO transactionCreate);
+        Task<TransactionResponseDTO[]?> CreateTransactionUpload(TransactionUploadDTO transactionCreateUpload);
         Task<TransactionResponseDTO?> UpdateTransaction(int id, TransactionUpdateDTO transactionUpdate);
         Task<TransactionResponseDTO?> DeleteTransaction(int id);
     }

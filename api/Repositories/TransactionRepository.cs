@@ -31,7 +31,7 @@ namespace api.Repositories
                                  .Include(t => t.Account)
                                  .Include(t => t.Category)
                                  .Where(t => t.AccountId == accountId)
-                                 .OrderByDescending(t => t.CreatedAt)
+                                 .OrderByDescending(t => t.TransactionDate)
                                  .ToListAsync();
         }
 
@@ -44,7 +44,6 @@ namespace api.Repositories
         {
             var newTransaction = new Transaction
             {
-                Id = transactionCreate.Id,
                 AccountId = transactionCreate.AccountId,
                 CategoryId = transactionCreate.CategoryId,
                 TransactionDate = transactionCreate.TransactionDate ?? DateOnly.FromDateTime(DateTime.Today),
@@ -64,6 +63,38 @@ namespace api.Repositories
             await _context.SaveChangesAsync();
 
             return newTransaction;
+        }
+
+        public async Task<Transaction[]> CreateUploadTransactionAsync(List<Transaction> transactionsFromUpload)
+        {
+            var transformedTransactions = new List<Transaction>();
+
+            foreach (Transaction t in transactionsFromUpload)
+            {
+                transformedTransactions.Add(
+                    new Transaction
+                    {
+                        AccountId = t.AccountId,
+                        // CategoryId = t.CategoryId,
+                        TransactionDate = t.TransactionDate ?? DateOnly.FromDateTime(DateTime.Today),
+                        CreatedAt = DateTime.UtcNow,
+                        EditDate = DateTime.UtcNow,
+                        Amount = t.IsIncome ? t.Amount : -t.Amount,
+                        Currency = t.Currency,
+                        Description = t.Description,
+                        Notes = t.Notes,
+                        IsIncome = t.IsIncome,
+                        IsCredit = t.IsCredit,
+                        IsManual = t.IsManual,
+                        IsDeleted = false,
+                    }
+                );
+            }
+
+            await _context.Transactions.AddRangeAsync(transformedTransactions);
+            await _context.SaveChangesAsync();
+
+            return transformedTransactions.ToArray();
         }
 
         // WORK ON THIS
