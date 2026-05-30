@@ -20,12 +20,25 @@ export interface Transaction {
     transactionDate: string;
     accountName: string;
     categoryName: string;
+    categoryId: number;
     amount: number;
     currency: string;
     description: string;
     notes: string;
     isIncome: boolean;
+    isCredit: boolean;
     type: "debit" | "credit";
+}
+
+export interface TransactionUpdate {
+    categoryId: number;
+    transactionDate: string;
+    amount: number;
+    currency: string;
+    isCredit: boolean;
+    isIncome: boolean;
+    description: string;
+    notes: string;
 }
 
 export interface Category {

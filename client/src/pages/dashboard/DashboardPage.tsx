@@ -12,12 +12,14 @@ import { ACCOUNT_TYPE_LABELS } from "../../lib/constants";
 import { fmt } from "../../lib/utils";
 import type { TabType, Transaction } from "../../types";
 import { ConfirmDeleteModal } from "@/components/ui/ConfirmDeleteModal";
+import { EditTransactionForm } from "@/components/forms/EditTransactionForm";
 
 export default function DashboardPage() {
     const {
         addAccount,
         transactions,
         addTransaction,
+        editTransaction,
         deleteTransaction,
         categories,
         selectedAccId,
@@ -33,6 +35,7 @@ export default function DashboardPage() {
     const [insights, setInsights] = useState<Record<number, string>>({});
     const [insightOpen, setInsightOpen] = useState<Record<number, boolean>>({});
     const [txToDelete, setTxToDelete] = useState<Transaction | null>(null);
+    const [txToEdit, setTxToEdit] = useState<Transaction | null>(null);
 
     const TABS: { id: TabType; label: string }[] = [
         { id: "transactions", label: "Transactions" },
@@ -159,6 +162,7 @@ export default function DashboardPage() {
                                                 onDelete={() =>
                                                     setTxToDelete(t)
                                                 }
+                                                onEdit={() => setTxToEdit(t)}
                                             />
                                         ))}
                                     </>
@@ -201,9 +205,17 @@ export default function DashboardPage() {
                             categories={categories}
                         />
                     )}
-                    
+
                     {showAddAcc && (
                         <AddAccountForm onClose={() => setShowAddAcc(false)} />
+                    )}
+
+                    {txToEdit && (
+                        <EditTransactionForm
+                            onClose={() => setTxToEdit(null)}
+                            transaction={txToEdit}
+                            categories={categories}
+                        />
                     )}
 
                     {txToDelete && (

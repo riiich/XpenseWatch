@@ -4,9 +4,10 @@ import { fmt, shortDate } from "../../lib/utils";
 interface TransactionRowProps {
     transaction: Transaction;
     onDelete: (id: number) => void;
+    onEdit: (id: number) => void;
 }
 
-export function TransactionRow({ transaction: tx, onDelete }: TransactionRowProps) {
+export function TransactionRow({ transaction: tx, onDelete, onEdit }: TransactionRowProps) {
     const isCredit = tx.type === "credit";
 
     return (
@@ -52,6 +53,10 @@ export function TransactionRow({ transaction: tx, onDelete }: TransactionRowProp
                     </span>
                 )}
             </span>
+
+            <button onClick={() => onEdit(tx.id)}>
+                Edit
+            </button>
 
             {/* Delete */}
             <button
