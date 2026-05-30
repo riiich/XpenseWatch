@@ -107,7 +107,7 @@ namespace api.Services
             }
             catch (Exception e)
             {
-                Console.WriteLine($"There was an error: {e}");
+                Console.WriteLine($"There was an error creating the transaction: {e}");
             }
 
             return null;
@@ -117,15 +117,22 @@ namespace api.Services
 
         public async Task<TransactionResponseDTO?> UpdateTransaction(int id, TransactionUpdateDTO transactionUpdate)
         {
-            var transactionToBeUpdated = await _transactionRepo.GetTransactionByIdAsync(id);
+            try
+            {
+                var transaction = await _transactionRepo.GetTransactionByIdAsync(id);
 
-            if (transactionToBeUpdated == null) return null;
+                if (transaction == null) return null;
 
-            TransactionMapper.TransactionUpdateDTOToTransaction(transactionToBeUpdated, transactionUpdate);
+                var transactionToBeUpdated = TransactionMapper.TransactionUpdateDTOToTransaction(transaction, transactionUpdate);
 
-            await _transactionRepo.UpdateTransactionAsync(id, transactionToBeUpdated);
+                await _transactionRepo.UpdateTransactionAsync(id, transactionToBeUpdated);
 
-            return TransactionMapper.TransactionToTransactionResponseDto(transactionToBeUpdated);
+                return TransactionMapper.TransactionToTransactionResponseDto(transactionToBeUpdated);
+            }
+            catch(Exception e)
+            {
+                throw new Exception($"There was an error updating your the transaction: {e.Message}");
+            }
         }
 
         public async Task<TransactionResponseDTO?> DeleteTransaction(int id)

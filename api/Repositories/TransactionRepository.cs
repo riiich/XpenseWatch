@@ -100,8 +100,16 @@ namespace api.Repositories
         // WORK ON THIS
         public async Task<Transaction?> UpdateTransactionAsync(int id, Transaction transactionUpdate)
         {
-            transactionUpdate.EditDate = DateTime.UtcNow;
+            var transaction = await _context.Transactions.FirstOrDefaultAsync(t => t.Id == id);
 
+            if(transaction == null) return null;
+
+            transaction.CategoryId = transactionUpdate.CategoryId;
+            transaction.Amount = transactionUpdate.Amount;
+            transaction.Currency = transactionUpdate.Currency;
+            transaction.Description = transactionUpdate.Description;
+            transaction.Notes = transactionUpdate.Notes;
+            
             await _context.SaveChangesAsync();
 
             return transactionUpdate;

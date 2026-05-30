@@ -19,6 +19,7 @@ namespace api.Mappers
                 EditDate = transaction.EditDate,
                 AccountName = transaction.Account?.Name ?? "Other",
                 CategoryName = transaction.Category?.Name ?? "Uncategorized",
+                CategoryId = transaction.CategoryId,
                 Amount = transaction.Amount,
                 Currency = transaction.Currency,
                 Description = transaction.Description,
@@ -53,17 +54,16 @@ namespace api.Mappers
         // not really a mapper, just updates existing transaction with the user's transaction updates
         public static Transaction TransactionUpdateDTOToTransaction(Transaction transactionToBeUpdated, TransactionUpdateDTO updateDto)
         {
-            transactionToBeUpdated.AccountId = updateDto.AccountId;
+            // transactionToBeUpdated.AccountId = updateDto.AccountId;
             transactionToBeUpdated.CategoryId = updateDto.CategoryId;
             transactionToBeUpdated.Amount = updateDto.Amount;
             transactionToBeUpdated.Currency = updateDto.Currency;
             transactionToBeUpdated.Description = updateDto.Description;
             transactionToBeUpdated.Notes = updateDto.Notes;
-            transactionToBeUpdated.EditDate = DateTime.Now; // local time (PST)
             transactionToBeUpdated.IsCredit = updateDto.IsCredit;
+            transactionToBeUpdated.EditDate = DateTime.Now; // local time (PST)
 
             return transactionToBeUpdated;
-            
         }
 
         public static Transaction TransactionUploadDtoToTransaction(ChaseStatementTransactionDTO transactionFileUpload, bool isCredit)

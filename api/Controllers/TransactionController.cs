@@ -93,6 +93,7 @@ namespace api.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> UpdateTransaction([FromRoute] int id, [FromBody] TransactionUpdateDTO updatedTransaction)
         {
             var transactionUpdate = await _service.UpdateTransaction(id, updatedTransaction);
