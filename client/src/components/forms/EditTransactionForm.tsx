@@ -54,10 +54,6 @@ export function EditTransactionForm({
 
     const labelCls =
         "text-[9px] tracking-[0.14em] text-slate-500 uppercase mb-1.5 block";
-
-    console.log("transaction form:", editTxForm);
-    console.log("categoryId:", editTxForm.categoryId);
-    console.log("categories:", categories);
     
     return (
         <Modal

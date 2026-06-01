@@ -115,8 +115,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
         const data = await res.json();
 
-		console.log("data: ", data);
-
         const transactionData = data.map((t: Transaction) => ({
             id: t.id,
             transactionDate: t.transactionDate,
