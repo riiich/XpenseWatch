@@ -7,7 +7,7 @@ namespace api.DTOs.TransactionDTOs
 {
     public class TransactionUploadDTO
     {
-        public required IFormFile PdfTransaction { get; set; }
+        public required IFormFile StatementFile { get; set; }
         public int AccountId { get; set; }
     }
 }

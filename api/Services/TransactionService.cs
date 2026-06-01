@@ -71,7 +71,7 @@ namespace api.Services
             try
             {
                 // extract the data from the csv
-                using var reader = new StreamReader(transactionCreateUpload.PdfTransaction.OpenReadStream());
+                using var reader = new StreamReader(transactionCreateUpload.StatementFile.OpenReadStream());
                 using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
 
                 var records = csv.GetRecords<dynamic>();

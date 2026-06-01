@@ -79,10 +79,10 @@ namespace api.Controllers
         [Authorize]
         public async Task<IActionResult> CreateUploadTransaction([FromForm] TransactionUploadDTO statement)
         {
-            if(statement == null || statement.PdfTransaction.ContentType != "text/csv")
+            if(statement == null || statement.StatementFile.ContentType != "text/csv")
                 return StatusCode(415, "Unsupported file type... Please upload a CSV file.");
 
-            var extension = Path.GetExtension(statement.PdfTransaction.FileName);
+            var extension = Path.GetExtension(statement.StatementFile.FileName);
             if(extension.ToLower() != ".csv")
                 return StatusCode(415, "Unsupported file type... Please upload a CSV file.");
 
