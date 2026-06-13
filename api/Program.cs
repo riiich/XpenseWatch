@@ -18,6 +18,11 @@ using Microsoft.OpenApi.Models;
 using api.Interfaces.CategoryInterface;
 using api.Interfaces.GoalInterface;
 using api.Interfaces.AI_Interface;
+using Amazon.S3;
+using Amazon;
+using Amazon.Runtime;
+using Microsoft.AspNetCore.Http.Features;
+using Microsoft.Extensions.Options;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -97,6 +102,43 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = builder.Configuration["Jwt:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SigningKey"]))
     };
+});
+
+// configure AWS
+builder.Services.Configure<S3Settings>(
+    builder.Configuration.GetSection("AWS")
+);
+builder.Services.Configure<UploadSettings>(
+    builder.Configuration.GetSection("Upload")
+);
+builder.Services.Configure<FormOptions>(options =>
+{
+    UploadSettings uploadSettings = builder.Configuration.GetSection("Upload").Get<UploadSettings>() ?? new UploadSettings();
+    options.MultipartBodyLengthLimit = uploadSettings.MaxFileSizeBytes;
+});
+builder.Services.AddSingleton<IAmazonS3>(sp =>
+{
+    var settings = sp
+        .GetRequiredService<IOptions<S3Settings>>()
+        .Value;
+
+    var credentials = new BasicAWSCredentials(
+        settings.AccessKey,
+        settings.SecretKey
+    );
+
+    var config = new AmazonS3Config
+    {
+        RegionEndpoint =
+            RegionEndpoint.GetBySystemName(
+                settings.Region
+            )
+    };  
+
+    return new AmazonS3Client(
+        credentials,
+        config
+    );
 });
 
 builder.Services.AddScoped<IUserRepositoryInterface, UserRepository>();

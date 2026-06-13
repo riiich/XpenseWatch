@@ -6,6 +6,7 @@ using api.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using api.Models;
 
 namespace api.Data
 {
@@ -17,10 +18,24 @@ namespace api.Data
         public DbSet<Account> Accounts { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Goal> Goals { get; set; }
+        public DbSet<S3Metadata> S3Metadata => Set<S3Metadata>();
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+            builder.Entity<S3Metadata>(entity =>
+        {
+            entity.HasKey(item => item.Id);
+            entity.Property(item => item.UserId).HasMaxLength(255).IsRequired();
+            entity.Property(item => item.S3Key).HasMaxLength(1024).IsRequired();
+            entity.Property(item => item.Status).HasConversion<int>();
+            entity.Property(item => item.FileName).HasMaxLength(255).IsRequired();
+            entity.Property(item => item.MimeType).HasMaxLength(255).IsRequired();
+            entity.Property(item => item.UploadedAt).HasDefaultValueSql("SYSUTCDATETIME()");
+            entity.HasIndex(item => item.UserId);
+            entity.HasIndex(item => item.S3Key).IsUnique();
+        });
 
             // if any issues with CreatedAt dates, handle them here
             builder.Entity<User>().Property(x => x.CreatedAt).HasDefaultValueSql("GETDATE()");
