@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using api.Interfaces;
 using api.Models;
 using System.Text;
+using api.Enums;
 
 namespace api.Services
 {
@@ -22,12 +23,14 @@ namespace api.Services
             _uploadSettings = uploadSettingsOptions.Value;
         }
 
-        public string CreateObjectKey(string fileName)
+        public string CreateObjectKey(string fileName, UploadCategory uploadCategory)
         {
             string safeFileName = Path.GetFileName(fileName);
             string extension = Path.GetExtension(safeFileName).ToLowerInvariant();
 
-            return $"uploads/{Guid.NewGuid()}{extension}";
+            if(uploadCategory == UploadCategory.Statement) return $"statements/{Guid.NewGuid()}{extension}";
+            else if(uploadCategory == UploadCategory.Receipt) return $"receipts/{Guid.NewGuid()}{extension}";
+            else return $"miscellaneous/{Guid.NewGuid()}{extension}";
         }
 
         public async Task ValidateFileAsync(FileUploadInput file)
@@ -56,7 +59,14 @@ namespace api.Services
             }
             catch (AmazonS3Exception e)
             {
-                throw new InvalidOperationException("There was an error uploading to S3.", e);
+                throw new InvalidOperationException(
+                $"There was an error uploading to S3. " +
+                $"StatusCode: {e.StatusCode}, " +
+                $"ErrorCode: {e.ErrorCode}, " +
+                $"Message: {e.Message}, " +
+                $"RequestId: {e.RequestId}",
+                e
+    );
             }
         }
 

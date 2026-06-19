@@ -32,20 +32,20 @@ public class S3MetadataController : ControllerBase
         return Ok(MapS3MetadataToResponseDto(item));
     }
 
-    [HttpGet("owner/{userId}")]
+    [HttpGet("user/{userId}")]
     public async Task<IActionResult> GetByuserId(string userId)
     {
         IReadOnlyList<S3Metadata> items = await _s3MetadataService.GetByuserIdAsync(userId);
 
         if (items.Count == 0)
         {
-            return NotFound("No S3 metadata exists for this owner.");
+            return NotFound("No S3 metadata exists for this user.");
         }
 
         return Ok(items.Select(MapS3MetadataToResponseDto));
     }
 
-    [HttpGet("owner/{userId}/{s3MetadataId:int}/file")]
+    [HttpGet("user/{userId}/{s3MetadataId:int}/file")]
     public async Task<IActionResult> RetrieveFile([FromRoute] string userId, [FromRoute] int s3MetadataId)
     {
         S3Metadata? item = await _s3MetadataService.GetByuserIdAndIdAsync(userId, s3MetadataId);
@@ -80,14 +80,14 @@ public class S3MetadataController : ControllerBase
         return Ok(MapS3MetadataToResponseDto(item));
     }
 
-    [HttpDelete("owner/{userId}/{s3MetadataId:int}")]
+    [HttpDelete("user/{userId}/{s3MetadataId:int}")]
     public async Task<IActionResult> Delete([FromRoute] string userId, [FromRoute] int s3MetadataId)
     {
         S3Metadata? item = await _s3MetadataService.GetByuserIdAndIdAsync(userId, s3MetadataId);
 
         if (item is null)
         {
-            return BadRequest("S3 metadata does not exist for this owner.");
+            return BadRequest("S3 metadata does not exist for this user.");
         }
 
         await _s3FileUploadService.DeleteFileAsync(item.S3Key);

@@ -23,7 +23,7 @@ public class FileUploadWorkflowService : IFileUploadWorkflowService
     {
         if (string.IsNullOrWhiteSpace(userId))
         {
-            throw new ArgumentException("An owner id is required before uploading files.");
+            throw new ArgumentException("A user id is required before uploading files.");
         }
 
         await _storageService.ValidateFileAsync(file);
@@ -41,7 +41,7 @@ public class FileUploadWorkflowService : IFileUploadWorkflowService
         };
 
         await _s3MetadataRepository.CreateAsync(item);
-
+ 
         try
         {
             await _storageService.UploadFileAsync(file, s3Key);
@@ -49,6 +49,7 @@ public class FileUploadWorkflowService : IFileUploadWorkflowService
         catch
         {
             item.Status = S3MetadataStatus.Failed;
+
             try
             {
                 await _s3MetadataRepository.UpdateAsync(item);

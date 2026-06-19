@@ -1,3 +1,5 @@
+using api.Enums;
+
 namespace api.Models;
 
 public class S3Metadata
@@ -7,6 +9,7 @@ public class S3Metadata
     public string UserId { get; set; } = string.Empty;
 
     public string S3Key { get; set; } = string.Empty;
+    public UploadCategory FileCategory { get; set; }
 
     public S3MetadataStatus Status { get; set; } = S3MetadataStatus.Pending;
 

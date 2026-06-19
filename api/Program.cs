@@ -166,6 +166,12 @@ builder.Services.AddScoped<IAIServiceInterface, AIService>();
 // Token for JWT
 builder.Services.AddScoped<ITokenServiceInterface, TokenService>();
 
+// File Upload Service
+builder.Services.AddScoped<IFileUploadWorkflowService, FileUploadWorkflowService>();
+builder.Services.AddScoped<IS3FileUploadService, S3FileUploadService>();
+builder.Services.AddScoped<IS3MetadataRepository, S3MetadataRepository>();
+builder.Services.AddScoped<IS3MetadataService, S3MetadataService>();
+
 // CORS configuration
 builder.Services.AddCors(options =>
 {
