@@ -1,3 +1,4 @@
+using api.Enums;
 using api.Interfaces;
 using api.Models;
 
@@ -19,7 +20,7 @@ public class FileUploadWorkflowService : IFileUploadWorkflowService
         _s3MetadataRepository = s3MetadataRepository;
     }
     
-    public async Task<S3Metadata> UploadAsync(string userId, FileUploadInput file)
+    public async Task<S3Metadata> UploadAsync(string userId, FileUploadInput file, UploadCategory uploadCategory)
     {
         if (string.IsNullOrWhiteSpace(userId))
         {
@@ -28,7 +29,7 @@ public class FileUploadWorkflowService : IFileUploadWorkflowService
 
         await _storageService.ValidateFileAsync(file);
 
-        string s3Key = _storageService.CreateObjectKey(file.FileName);
+        string s3Key = _storageService.CreateObjectKey(file.FileName, uploadCategory);  
 
         S3Metadata item = new()
         {

@@ -20,8 +20,8 @@ namespace api.Controllers
         }
 
         [HttpPost]
-        [Route("upload")]
-        public async Task<IActionResult> FileUpload(IFormFile uploadedFile, [FromForm] string userId)
+        [Route("statementUpload")]
+        public async Task<IActionResult> StatementUpload(IFormFile uploadedFile, [FromForm] string userId)
         {
             try
             {
@@ -37,7 +37,51 @@ namespace api.Controllers
                     ContentType = uploadedFile.ContentType,
                     Length = uploadedFile.Length,
                     Content = fileContent
-                });
+                }, 
+                Enums.UploadCategory.Statement
+                );
+
+                string fileUrl = _linkGenerator.GetUriByAction(
+                    HttpContext,
+                    action: nameof(S3MetadataController.RetrieveFile),
+                    controller: "S3Metadata",
+                    values: new { userId = item.UserId, s3MetadataId = item.Id }) ?? string.Empty;
+
+                S3MetadataResponseDto response = S3MetadataResponseDtoMapper.MapS3MetadataToS3MetadataResponseDto(item, fileUrl);
+
+                return Ok(new { message = "File uploaded successfully.", item = response });
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (InvalidOperationException e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
+        [HttpPost]
+        [Route("receiptUpload")]
+        public async Task<IActionResult> ReceiptUpload(IFormFile uploadedFile, [FromForm] string userId)
+        {
+            try
+            {
+                if (uploadedFile is null)
+                {
+                    return BadRequest("A file is required.");
+                }
+
+                await using Stream fileContent = uploadedFile.OpenReadStream();
+                S3Metadata item = await _fileUploadWorkflowService.UploadAsync(userId, new FileUploadInput
+                {
+                    FileName = uploadedFile.FileName,
+                    ContentType = uploadedFile.ContentType,
+                    Length = uploadedFile.Length,
+                    Content = fileContent
+                },
+                Enums.UploadCategory.Receipt
+                );
 
                 string fileUrl = _linkGenerator.GetUriByAction(
                     HttpContext,
