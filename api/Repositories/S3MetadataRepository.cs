@@ -36,19 +36,24 @@ public class S3MetadataRepository : IS3MetadataRepository
             .FirstOrDefaultAsync(item => item.Id == id);
     }
 
-    public async Task<S3Metadata?> GetByuserIdAndIdAsync(string userId, int s3MetadataId)
+    public async Task<S3Metadata?> GetByUserIdAndIdAsync(string userId, int s3MetadataId)
     {
         return await _context.S3Metadata
             .FirstOrDefaultAsync(item => item.UserId == userId && item.Id == s3MetadataId);
     }
 
-    public async Task<IReadOnlyList<S3Metadata>> GetByuserIdAsync(string userId)
+    public async Task<IReadOnlyList<S3Metadata>> GetByUserIdAsync(string userId)
     {
         return await _context.S3Metadata
             .AsNoTracking()
             .Where(item => item.UserId == userId)
             .OrderByDescending(item => item.UploadedAt)
             .ToListAsync();
+    }
+
+    public async Task<S3Metadata?> GetByTransactionIdAsync(int transactionId)
+    {
+        return await _context.S3Metadata.FirstOrDefaultAsync(s => s.TransactionId == transactionId);
     }
 
     public async Task<S3Metadata?> UpdateLastRetrievedAsync(int id)

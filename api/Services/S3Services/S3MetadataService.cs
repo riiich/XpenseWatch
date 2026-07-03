@@ -17,14 +17,19 @@ public class S3MetadataService : IS3MetadataService
         return await _s3MetadataRepository.GetByIdAsync(id);
     }
 
-    public async Task<S3Metadata?> GetByuserIdAndIdAsync(string userId, int s3MetadataId)
+    public async Task<S3Metadata?> GetByUserIdAndIdAsync(string userId, int s3MetadataId)
     {
-        return await _s3MetadataRepository.GetByuserIdAndIdAsync(userId, s3MetadataId);
+        return await _s3MetadataRepository.GetByUserIdAndIdAsync(userId, s3MetadataId);
     }
 
-    public async Task<IReadOnlyList<S3Metadata>> GetByuserIdAsync(string userId)
+    public async Task<IReadOnlyList<S3Metadata>> GetByUserIdAsync(string userId)
     {
-        return await _s3MetadataRepository.GetByuserIdAsync(userId);
+        return await _s3MetadataRepository.GetByUserIdAsync(userId);
+    }
+
+    public async Task<S3Metadata?> GetByTransactionIdAsync(int transactionId)
+    {
+        return await _s3MetadataRepository.GetByTransactionIdAsync(transactionId);
     }
 
     public async Task DeleteAsync(S3Metadata item)

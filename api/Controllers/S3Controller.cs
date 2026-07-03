@@ -3,6 +3,7 @@ using api.DTOs;
 using api.Interfaces;
 using api.Mappers;
 using api.Models;
+using api.Services;
 
 namespace api.Controllers
 {
@@ -12,15 +13,20 @@ namespace api.Controllers
     {
         private readonly IFileUploadWorkflowService _fileUploadWorkflowService;
         private readonly LinkGenerator _linkGenerator;
+        private readonly IS3MetadataService _s3MetadataService;
+        private readonly IS3FileUploadService _s3FileUploadService;
 
-        public S3Controller(IFileUploadWorkflowService fileUploadWorkflowService, LinkGenerator linkGenerator)
+        public S3Controller(IFileUploadWorkflowService fileUploadWorkflowService, LinkGenerator linkGenerator, 
+                            IS3MetadataService s3MetadataService, IS3FileUploadService s3FileUploadService)
         {
             _fileUploadWorkflowService = fileUploadWorkflowService;
             _linkGenerator = linkGenerator;
+            _s3MetadataService = s3MetadataService;
+            _s3FileUploadService = s3FileUploadService;
         }
 
         [HttpPost]
-        [Route("statementUpload")]
+        [Route("statements")]
         public async Task<IActionResult> StatementUpload(IFormFile uploadedFile, [FromForm] string userId)
         {
             try
@@ -61,8 +67,21 @@ namespace api.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("receipts/{transactionId}")]
+        public async Task<IActionResult> GetReceiptFile([FromRoute] int transactionId)
+        {
+            var s3Metadata = await _s3MetadataService.GetByTransactionIdAsync(transactionId);
+
+            if(s3Metadata is null) return NotFound("There is no S3 metadata available for this transaction...");
+
+            var presignedUrl = _s3FileUploadService.GetPresignedUrl(s3Metadata.S3Key);
+
+            return Ok(new { presignedUrl = presignedUrl });
+        }
+
         [HttpPost]
-        [Route("receiptUpload")]
+        [Route("receipts")]
         public async Task<IActionResult> ReceiptUpload(IFormFile uploadedFile, [FromForm] string userId)
         {
             try

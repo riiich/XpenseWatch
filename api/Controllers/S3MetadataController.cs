@@ -35,7 +35,7 @@ public class S3MetadataController : ControllerBase
     [HttpGet("user/{userId}")]
     public async Task<IActionResult> GetByuserId(string userId)
     {
-        IReadOnlyList<S3Metadata> items = await _s3MetadataService.GetByuserIdAsync(userId);
+        IReadOnlyList<S3Metadata> items = await _s3MetadataService.GetByUserIdAsync(userId);
 
         if (items.Count == 0)
         {
@@ -48,7 +48,7 @@ public class S3MetadataController : ControllerBase
     [HttpGet("user/{userId}/{s3MetadataId:int}/file")]
     public async Task<IActionResult> RetrieveFile([FromRoute] string userId, [FromRoute] int s3MetadataId)
     {
-        S3Metadata? item = await _s3MetadataService.GetByuserIdAndIdAsync(userId, s3MetadataId);
+        S3Metadata? item = await _s3MetadataService.GetByUserIdAndIdAsync(userId, s3MetadataId);
 
         if (item is null)
         {
@@ -83,7 +83,7 @@ public class S3MetadataController : ControllerBase
     [HttpDelete("user/{userId}/{s3MetadataId:int}")]
     public async Task<IActionResult> Delete([FromRoute] string userId, [FromRoute] int s3MetadataId)
     {
-        S3Metadata? item = await _s3MetadataService.GetByuserIdAndIdAsync(userId, s3MetadataId);
+        S3Metadata? item = await _s3MetadataService.GetByUserIdAndIdAsync(userId, s3MetadataId);
 
         if (item is null)
         {

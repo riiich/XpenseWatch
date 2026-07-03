@@ -7,6 +7,7 @@ public class S3Metadata
     public int Id { get; set; }
 
     public string UserId { get; set; } = string.Empty;
+    public int TransactionId { get; set; }
 
     public string S3Key { get; set; } = string.Empty;
     public UploadCategory FileCategory { get; set; }
