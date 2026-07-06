@@ -58,10 +58,28 @@ export function TransactionRow({
     };
 
     // ** WORK ON **
-    const uploadReceipt = (file: File) => {
+    const uploadReceipt = async (file: File) => {
         console.log("File to upload: ", file);
 
-        // call api
+        const formData = new FormData();
+        formData.append('receipt-image', file);
+
+        try {
+            const res = await fetch("http://localhost:5095/api/s3/receipts", {
+                method: "POST",
+                headers: {
+                    Authorization: `bearer ${localStorage.getItem("token")}`,
+                },
+                body: formData
+            });
+
+            const data = await res.json();
+
+            console.log("Uploaded receipt image: ", data);
+        } 
+        catch (e) {
+            console.error("Upload failed...", e);
+        }
     };
 
     // ** WORK ON **
