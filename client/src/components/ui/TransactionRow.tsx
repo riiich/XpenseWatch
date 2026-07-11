@@ -34,6 +34,8 @@ export function TransactionRow({
             );
 
             if (res.status === 404) {
+                console.log("Failed to retrieve receipt:", res.statusText);
+
                 setHasReceipt(false);
                 setImageUrl(null);
                 return;
@@ -45,8 +47,11 @@ export function TransactionRow({
 
             const data = await res.json();
 
-            console.log("data: ", data);
-            setHasReceipt(true);
+            console.log("presigned url: ", data.presignedUrl);
+            console.log("getting receipt -- received: ", data);
+
+
+            setHasReceipt(Boolean(data.presignedUrl));
             setImageUrl(data.presignedUrl ?? null);
         } catch (e) {
             setReceiptError("Could not load receipt...");
@@ -57,12 +62,12 @@ export function TransactionRow({
         }
     };
 
-    // ** WORK ON **
     const uploadReceipt = async (file: File) => {
         console.log("File to upload: ", file);
 
         const formData = new FormData();
-        formData.append('receipt-image', file);
+        formData.append("receiptImage", file);
+        formData.append("transactionId", transaction.id.toString());
 
         try {
             const res = await fetch("http://localhost:5095/api/s3/receipts", {
@@ -73,9 +78,17 @@ export function TransactionRow({
                 body: formData
             });
 
+            if(!res.ok)
+            {
+                console.log("There was an error uploading: ", res.statusText);
+                throw new Error("Upload failed!");
+            }
+
             const data = await res.json();
 
             console.log("Uploaded receipt image: ", data);
+
+            await getReceipt();
         } 
         catch (e) {
             console.error("Upload failed...", e);
