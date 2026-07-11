@@ -11,8 +11,6 @@ export interface Account {
     name: string;
     type: AccountType;
     balance: number;
-    // saved: number;
-    // transactions: Transaction[];
 }
 
 export interface Transaction {

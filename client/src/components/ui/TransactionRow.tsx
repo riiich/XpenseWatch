@@ -4,181 +4,163 @@ import { useState } from "react";
 import ImageReceiptModal from "./ImageReceiptModal";
 
 interface TransactionRowProps {
-    transaction: Transaction;
-    onDelete: (id: number) => void;
-    onEdit: (id: number) => void;
+	transaction: Transaction;
+	onDelete: (id: number) => void;
+	onEdit: (id: number) => void;
 }
 
-export function TransactionRow({
-    transaction,
-    onDelete,
-    onEdit,
-}: TransactionRowProps) {
-    const isCredit = transaction.type === "credit";
-    const [isImageModalOpen, setIsImageModalOpen] = useState(false);
-    const [imageUrl, setImageUrl] = useState<string | null>(null);
-    const [isReceiptLoading, setIsReceiptLoading] = useState(false);
-    const [receiptError, setReceiptError] = useState<string | null>(null);
-    const [hasReceipt, setHasReceipt] = useState<boolean | null>(null);
+export function TransactionRow({ transaction, onDelete, onEdit }: TransactionRowProps) {
+	const isCredit = transaction.type === "credit";
+	const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+	const [imageUrl, setImageUrl] = useState<string | null>(null);
+	const [isReceiptLoading, setIsReceiptLoading] = useState(false);
+	const [receiptError, setReceiptError] = useState<string | null>(null);
+	const [hasReceipt, setHasReceipt] = useState<boolean | null>(null);
 
-    const getReceipt = async () => {
-        setIsImageModalOpen(true);
-        setReceiptError(null);
-        setImageUrl(null);
+	const getReceipt = async () => {
+		setIsImageModalOpen(true);
+		setReceiptError(null);
+		setImageUrl(null);
 
-        try {
-            setIsReceiptLoading(true);
+		try {
+			setIsReceiptLoading(true);
 
-            const res = await fetch(
-                `http:localhost:5095/api/s3/receipts/${transaction.id}`,
-            );
+			const res = await fetch(`http://localhost:5095/api/s3/receipts/${transaction.id}`, {
+				headers: {
+					Authorization: `Bearer ${localStorage.getItem("token")}`,
+				},
+			});
 
-            if (res.status === 404) {
-                console.log("Failed to retrieve receipt:", res.statusText);
+			if (res.status === 404) {
+				console.log("Failed to retrieve receipt:", res.statusText);
 
-                setHasReceipt(false);
-                setImageUrl(null);
-                return;
-            }
+				setHasReceipt(false);
+				setImageUrl(null);
+				return;
+			}
 
-            if (!res.ok) {
-                throw new Error("Failed to get receipt...");
-            }
+			if (!res.ok) {
+				throw new Error("Failed to get receipt...");
+			}
 
-            const data = await res.json();
+			const data = await res.json();
 
-            console.log("presigned url: ", data.presignedUrl);
-            console.log("getting receipt -- received: ", data);
+			setHasReceipt(Boolean(data.presignedUrl));
+			setImageUrl(data.presignedUrl ?? null);
+		} catch (e) {
+			setReceiptError("Could not load receipt...");
+			setImageUrl(null);
+			console.log(e);
+		} finally {
+			setIsReceiptLoading(false);
+		}
+	};
 
+	const uploadReceipt = async (file: File) => {
+		console.log("File to upload: ", file);
 
-            setHasReceipt(Boolean(data.presignedUrl));
-            setImageUrl(data.presignedUrl ?? null);
-        } catch (e) {
-            setReceiptError("Could not load receipt...");
-            setImageUrl(null);
-            console.log(e);
-        } finally {
-            setIsReceiptLoading(false);
-        }
-    };
+		const formData = new FormData();
+		formData.append("receiptImage", file);
+		formData.append("transactionId", transaction.id.toString());
 
-    const uploadReceipt = async (file: File) => {
-        console.log("File to upload: ", file);
+		try {
+			const res = await fetch("http://localhost:5095/api/s3/receipts", {
+				method: "POST",
+				headers: {
+					Authorization: `bearer ${localStorage.getItem("token")}`,
+				},
+				body: formData,
+			});
 
-        const formData = new FormData();
-        formData.append("receiptImage", file);
-        formData.append("transactionId", transaction.id.toString());
+			if (!res.ok) {
+				console.log("There was an error uploading: ", res.statusText);
+				throw new Error("Upload failed!");
+			}
 
-        try {
-            const res = await fetch("http://localhost:5095/api/s3/receipts", {
-                method: "POST",
-                headers: {
-                    Authorization: `bearer ${localStorage.getItem("token")}`,
-                },
-                body: formData
-            });
+			const data = await res.json();
 
-            if(!res.ok)
-            {
-                console.log("There was an error uploading: ", res.statusText);
-                throw new Error("Upload failed!");
-            }
+			console.log("Uploaded receipt image: ", data);
 
-            const data = await res.json();
+			await getReceipt();
+		} catch (e) {
+			console.error("Upload failed...", e);
+		}
+	};
 
-            console.log("Uploaded receipt image: ", data);
+	// ** WORK ON **
+	const replaceReceipt = (file: File) => {
+		console.log("File to replace: ", file);
 
-            await getReceipt();
-        } 
-        catch (e) {
-            console.error("Upload failed...", e);
-        }
-    };
+		// call api
+	};
 
-    // ** WORK ON **
-    const replaceReceipt = (file: File) => {
-        console.log("File to replace: ", file);
+	// ** WORK ON **
+	const deleteReceipt = () => {
+		console.log("File deleted!");
 
-        // call api
-    };
+		// call api
+	};
 
-    // ** WORK ON **
-    const deleteReceipt = () => {
-        console.log("File deleted!");
+	return (
+		<div className="flex items-center gap-10 px-3 py-3 rounded-lg border-b border-[#0f172a] hover:bg-[#0a1422] transition-colors group">
+			<span className="text-[12px] text-slate-500 w-22 shrink-0">
+				{shortDate(transaction.transactionDate)}
+			</span>
 
-        // call api
-    };
+			<div className="w-1.5 h-1.5 rounded-full shrink-0" />
 
-    return (
-        <div className="flex items-center gap-10 px-3 py-3 rounded-lg border-b border-[#0f172a] hover:bg-[#0a1422] transition-colors group">
-            <span className="text-[12px] text-slate-500 w-22 shrink-0">
-                {shortDate(transaction.transactionDate)}
-            </span>
+			<div className="flex flex-col gap-2 flex-1 min-w-0">
+				<span className="text-[12px] text-slate-200 truncate">{transaction.description}</span>
+				{transaction.notes && (
+					<span className="text-[11px] text-slate-500 truncate">{transaction.notes}</span>
+				)}
+			</div>
 
-            <div className="w-1.5 h-1.5 rounded-full shrink-0" />
+			<div className="border-2 p-2">
+				<button onClick={getReceipt}>
+					{hasReceipt === true ? "View Receipt" : hasReceipt === false ? "Add Receipt" : "Receipt"}
+				</button>
+			</div>
 
-            <div className="flex flex-col gap-2 flex-1 min-w-0">
-                <span className="text-[12px] text-slate-200 truncate">
-                    {transaction.description}
-                </span>
-                {transaction.notes && (
-                    <span className="text-[11px] text-slate-500 truncate">
-                        {transaction.notes}
-                    </span>
-                )}
-            </div>
+			<span className="text-[12px] text-slate-500 tracking-wide w-1/7 shrink-0 sm:block">
+				{transaction.categoryName}
+			</span>
 
-            <div className="border-2 p-2">
-                <button onClick={getReceipt}>
-                    {hasReceipt === true
-                        ? "View Receipt"
-                        : hasReceipt === false
-                          ? "Add Receipt"
-                          : "Receipt"}
-                </button>
-            </div>
+			<span
+				className={`text-[14px] font-medium tracking-wide w-28 text-right shrink-0 ${
+					isCredit ? "text-emerald-400" : "text-slate-100"
+				}`}
+			>
+				{transaction.isIncome ? (
+					<span className="text-emerald-400">+{fmt(transaction.amount, transaction.currency)}</span>
+				) : (
+					<span className="text-red-400">-{fmt(transaction.amount, transaction.currency)}</span>
+				)}
+			</span>
 
-            <span className="text-[12px] text-slate-500 tracking-wide w-1/7 shrink-0 sm:block">
-                {transaction.categoryName}
-            </span>
+			<button onClick={() => onEdit(transaction.id)}>Edit</button>
 
-            <span
-                className={`text-[14px] font-medium tracking-wide w-28 text-right shrink-0 ${
-                    isCredit ? "text-emerald-400" : "text-slate-100"
-                }`}
-            >
-                {transaction.isIncome ? (
-                    <span className="text-emerald-400">
-                        +{fmt(transaction.amount, transaction.currency)}
-                    </span>
-                ) : (
-                    <span className="text-red-400">
-                        -{fmt(transaction.amount, transaction.currency)}
-                    </span>
-                )}
-            </span>
+			<button
+				onClick={() => onDelete(transaction.id)}
+				className="text-red-400 text-xl hover:text-2xl leading-none w-6 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
+				aria-label="Delete transaction"
+			>
+				🗑️
+			</button>
 
-            <button onClick={() => onEdit(transaction.id)}>Edit</button>
-
-            <button
-                onClick={() => onDelete(transaction.id)}
-                className="text-red-400 text-xl hover:text-2xl leading-none w-6 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                aria-label="Delete transaction"
-            >
-                🗑️
-            </button>
-
-            <ImageReceiptModal
-                isOpen={isImageModalOpen}
-                imageUrl={imageUrl}
-                hasReceipt={hasReceipt === true}
-                isLoading={isReceiptLoading}
-                error={receiptError}
-                onClose={() => setIsImageModalOpen(false)}
-                onUpload={uploadReceipt}
-                onReplace={replaceReceipt}
-                onDelete={deleteReceipt}
-            />
-        </div>
-    );
+			<div className="justify-center align-middle">
+				<ImageReceiptModal
+					isOpen={isImageModalOpen}
+					imageUrl={imageUrl}
+					hasReceipt={hasReceipt === true}
+					isLoading={isReceiptLoading}
+					error={receiptError}
+					onClose={() => setIsImageModalOpen(false)}
+					onUpload={uploadReceipt}
+					onReplace={replaceReceipt}
+					onDelete={deleteReceipt}
+				/>
+			</div>
+		</div>
+	);
 }

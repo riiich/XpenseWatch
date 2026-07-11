@@ -43,9 +43,9 @@ export default function ImageReceiptModal({
             onClick={onClose}
         >
             <div
-                className="relative w-full max-w-2xl rounded-lg bg-white p-6 shadow-lg"
+                className="relative w-full max-w-2xl rounded-lg bg-blue-950 p-6 shadow-lg"
                 onClick={(e) => e.stopPropagation()}
-            >
+            > 
                 <button
                     type="button"
                     onClick={onClose}
@@ -54,7 +54,7 @@ export default function ImageReceiptModal({
                     ✕
                 </button>
 
-                <h2 className="mb-4 text-lg font-semibold text-gray-900">
+                <h2 className="mb-4 text-lg font-semibold text-white0">
                     Receipt
                 </h2>
 
