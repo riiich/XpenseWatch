@@ -4,6 +4,8 @@ using api.Interfaces;
 using api.Mappers;
 using api.Models;
 using api.Services;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace api.Controllers
 {
@@ -27,8 +29,15 @@ namespace api.Controllers
 
         [HttpPost]
         [Route("statements")]
-        public async Task<IActionResult> StatementUpload(IFormFile uploadedFile, [FromForm] string userId)
+        public async Task<IActionResult> StatementUpload(IFormFile uploadedFile, [FromForm] int transactionId)
         {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if(string.IsNullOrWhiteSpace(userId))
+            {
+                return Unauthorized("User ID is no where fucking found in the token...");
+            }
+
             try
             {
                 if (uploadedFile is null)
@@ -37,7 +46,7 @@ namespace api.Controllers
                 }
 
                 await using Stream fileContent = uploadedFile.OpenReadStream();
-                S3Metadata item = await _fileUploadWorkflowService.UploadAsync(userId, new FileUploadInput
+                S3Metadata item = await _fileUploadWorkflowService.UploadAsync(userId, null, new FileUploadInput
                 {
                     FileName = uploadedFile.FileName,
                     ContentType = uploadedFile.ContentType,
@@ -80,23 +89,32 @@ namespace api.Controllers
             return Ok(new { presignedUrl = presignedUrl });
         }
 
+        [Authorize]
         [HttpPost]
         [Route("receipts")]
-        public async Task<IActionResult> ReceiptUpload(IFormFile uploadedFile, [FromForm] string userId)
+        public async Task<IActionResult> ReceiptUpload(IFormFile receiptImage, [FromForm] int transactionId)
         {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if(string.IsNullOrWhiteSpace(userId))
+            {
+                return Unauthorized("User ID is no where fucking found in the token...");
+            }
+
             try
             {
-                if (uploadedFile is null)
+                if (receiptImage is null)
                 {
+                    Console.WriteLine($"in here?");
                     return BadRequest("A file is required.");
                 }
 
-                await using Stream fileContent = uploadedFile.OpenReadStream();
-                S3Metadata item = await _fileUploadWorkflowService.UploadAsync(userId, new FileUploadInput
+                await using Stream fileContent = receiptImage.OpenReadStream();
+                S3Metadata item = await _fileUploadWorkflowService.UploadAsync(userId, (int)transactionId, new FileUploadInput
                 {
-                    FileName = uploadedFile.FileName,
-                    ContentType = uploadedFile.ContentType,
-                    Length = uploadedFile.Length,
+                    FileName = receiptImage.FileName,
+                    ContentType = receiptImage.ContentType,
+                    Length = receiptImage.Length,
                     Content = fileContent
                 },
                 Enums.UploadCategory.Receipt

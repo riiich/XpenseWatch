@@ -5,5 +5,5 @@ namespace api.Interfaces;
 
 public interface IFileUploadWorkflowService
 {
-    Task<S3Metadata> UploadAsync(string userId, FileUploadInput file, UploadCategory uploadCategory);
+    Task<S3Metadata> UploadAsync(string userId, int? transactionId, FileUploadInput file, UploadCategory uploadCategory);
 }

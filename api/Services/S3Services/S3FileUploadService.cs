@@ -117,14 +117,14 @@ namespace api.Services
 
             if (!_uploadSettings.AcceptedTypes.Contains(file.ContentType, StringComparer.OrdinalIgnoreCase))
             {
-                throw new ArgumentException("Only PDF and CSV files are allowed.");
+                throw new ArgumentException("Only PDF, CSV, and IMAGES files are allowed.");
             }
 
             string extension = Path.GetExtension(file.FileName).ToLowerInvariant();
 
             if (!_uploadSettings.AcceptedExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase))
             {
-                throw new ArgumentException("Only files with .pdf and .csv extensions are allowed.");
+                throw new ArgumentException("Only files with .pdf, .csv, .jpg, .jpeg, and .png extensions are allowed.");
             }
 
             return extension;
@@ -136,6 +136,9 @@ namespace api.Services
             {
                 ".pdf" => ValidatePdfSignatureAsync(stream),
                 ".csv" => ValidateCsvContentAsync(stream),
+                ".jpeg" => ValidateJpegSignatureAsync(stream),
+                ".jpg" => ValidateJpegSignatureAsync(stream),
+                ".png" => ValidatePngSignatureAsync(stream),
                 _ => throw new ArgumentException("Unsupported file extension.")
             };
         }
@@ -195,6 +198,56 @@ namespace api.Services
             finally
             {
                 stream.Position = originalPosition;
+            }
+        }
+
+        private static async Task ValidateJpegSignatureAsync(Stream stream)
+        {
+            byte[] buffer = new byte[3];
+
+            int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length);
+
+            if (stream.CanSeek)
+            {
+                stream.Position = 0;
+            }
+
+            bool isJpeg =
+                bytesRead == 3 &&
+                buffer[0] == 0xFF &&
+                buffer[1] == 0xD8 &&
+                buffer[2] == 0xFF;
+
+            if (!isJpeg)
+            {
+                throw new ArgumentException("Invalid JPEG file.");
+            }
+        }
+
+        private static async Task ValidatePngSignatureAsync(Stream stream)
+        {
+            byte[] expectedSignature =
+            [
+                0x89, 0x50, 0x4E, 0x47,
+                0x0D, 0x0A, 0x1A, 0x0A
+            ];
+
+            byte[] buffer = new byte[expectedSignature.Length];
+
+            int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length);
+
+            if (stream.CanSeek)
+            {
+                stream.Position = 0;
+            }
+
+            bool isPng =
+                bytesRead == expectedSignature.Length &&
+                buffer.SequenceEqual(expectedSignature);
+
+            if (!isPng)
+            {
+                throw new ArgumentException("Invalid PNG file.");
             }
         }
 
