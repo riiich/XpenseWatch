@@ -20,7 +20,7 @@ public class FileUploadWorkflowService : IFileUploadWorkflowService
         _storageService = storageService;
         _s3MetadataRepository = s3MetadataRepository;
     }
-    
+
     public async Task<S3Metadata> UploadAsync(string userId, int? transactionId, FileUploadInput file, UploadCategory uploadCategory)
     {
         if (string.IsNullOrWhiteSpace(userId))
@@ -30,7 +30,7 @@ public class FileUploadWorkflowService : IFileUploadWorkflowService
 
         await _storageService.ValidateFileAsync(file);
 
-        string s3Key = _storageService.CreateObjectKey(file.FileName, uploadCategory);  
+        string s3Key = _storageService.CreateObjectKey(file.FileName, uploadCategory);
 
         S3Metadata item = new()
         {
@@ -44,13 +44,21 @@ public class FileUploadWorkflowService : IFileUploadWorkflowService
         };
 
         await _s3MetadataRepository.CreateAsync(item);
- 
+
         try
         {
             await _storageService.UploadFileAsync(file, s3Key);
         }
-        catch
+        catch (Exception uploadException)
         {
+            _logger.LogError(
+                uploadException,
+                "S3 upload failed for metadata {S3MetadataId}. Bucket key: {S3Key}, file: {FileName}",
+                item.Id,
+                item.S3Key,
+                item.FileName
+            );
+
             item.Status = S3MetadataStatus.Failed;
 
             try

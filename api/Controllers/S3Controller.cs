@@ -18,7 +18,7 @@ namespace api.Controllers
         private readonly IS3MetadataService _s3MetadataService;
         private readonly IS3FileUploadService _s3FileUploadService;
 
-        public S3Controller(IFileUploadWorkflowService fileUploadWorkflowService, LinkGenerator linkGenerator, 
+        public S3Controller(IFileUploadWorkflowService fileUploadWorkflowService, LinkGenerator linkGenerator,
                             IS3MetadataService s3MetadataService, IS3FileUploadService s3FileUploadService)
         {
             _fileUploadWorkflowService = fileUploadWorkflowService;
@@ -33,7 +33,7 @@ namespace api.Controllers
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            if(string.IsNullOrWhiteSpace(userId))
+            if (string.IsNullOrWhiteSpace(userId))
             {
                 return Unauthorized("User ID is no where fucking found in the token...");
             }
@@ -52,7 +52,7 @@ namespace api.Controllers
                     ContentType = uploadedFile.ContentType,
                     Length = uploadedFile.Length,
                     Content = fileContent
-                }, 
+                },
                 Enums.UploadCategory.Statement
                 );
 
@@ -76,17 +76,18 @@ namespace api.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet]
         [Route("receipts/{transactionId}")]
         public async Task<IActionResult> GetReceiptFile([FromRoute] int transactionId)
         {
             var s3Metadata = await _s3MetadataService.GetByTransactionIdAsync(transactionId);
 
-            if(s3Metadata is null) return NotFound("There is no S3 metadata available for this transaction...");
+            if (s3Metadata is null) return NotFound("There is no S3 metadata available for this transaction...");
 
             var presignedUrl = _s3FileUploadService.GetPresignedUrl(s3Metadata.S3Key);
 
-            return Ok(new { presignedUrl = presignedUrl });
+            return Ok(new { presignedUrl = presignedUrl, uploadedAt = s3Metadata.UploadedAt });
         }
 
         [Authorize]
@@ -96,7 +97,7 @@ namespace api.Controllers
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            if(string.IsNullOrWhiteSpace(userId))
+            if (string.IsNullOrWhiteSpace(userId))
             {
                 return Unauthorized("User ID is no where fucking found in the token...");
             }

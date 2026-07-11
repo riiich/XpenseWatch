@@ -37,22 +37,22 @@ builder.Services.AddEndpointsApiExplorer();
 // builder.Services.AddSwaggerGen();
 
 // used to authorize whether the jwt is valid IN swagger 
-    builder.Services.AddSwaggerGen(option =>
+builder.Services.AddSwaggerGen(option =>
+{
+    option.SwaggerDoc("v1", new OpenApiInfo { Title = "XpenseWatch API", Version = "v1" });
+
+    option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        option.SwaggerDoc("v1", new OpenApiInfo { Title = "XpenseWatch API", Version = "v1" });
+        In = ParameterLocation.Header,
+        Description = "Please enter a valid token.",
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        BearerFormat = "JWT",
+        Scheme = "bearer"
+    });
 
-        option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-        {
-            In = ParameterLocation.Header,
-            Description = "Please enter a valid token.",
-            Name = "Authorization",
-            Type = SecuritySchemeType.Http,
-            BearerFormat = "JWT",
-            Scheme = "bearer"
-        });
-
-        option.AddSecurityRequirement(new OpenApiSecurityRequirement
-        {
+    option.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
             {
                 new OpenApiSecurityScheme
                 {
@@ -64,8 +64,8 @@ builder.Services.AddEndpointsApiExplorer();
                 },
                 Array.Empty<string>()
             }
-        });
     });
+});
 
 builder.Services.AddDbContext<ApplicationDBContext>(options => options.UseSqlServer(
     builder.Configuration.GetConnectionString("DefaultConnection")
@@ -77,7 +77,7 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
     options.User.RequireUniqueEmail = true;     // by default, it only checks for UserName so have to explicitly make email unique
 
     options.Password.RequireDigit = true;
-    options.Password.RequiredLength = 8; 
+    options.Password.RequiredLength = 8;
 }).AddEntityFrameworkStores<ApplicationDBContext>();
 
 // jwt configuration
@@ -133,7 +133,7 @@ builder.Services.AddSingleton<IAmazonS3>(sp =>
             RegionEndpoint.GetBySystemName(
                 settings.Region
             )
-    };  
+    };
 
     return new AmazonS3Client(
         credentials,
@@ -178,7 +178,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: MyAllowSpecificOrigins,
                       policy =>
                       {
-                        policy.WithOrigins("http://localhost:5173").AllowAnyHeader().AllowAnyMethod();
+                          policy.WithOrigins("http://localhost:5173").AllowAnyHeader().AllowAnyMethod();
                       });
 });
 
