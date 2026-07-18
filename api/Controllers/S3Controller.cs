@@ -81,6 +81,7 @@ namespace api.Controllers
         [Route("receipts/{transactionId}")]
         public async Task<IActionResult> GetReceiptFile([FromRoute] int transactionId)
         {
+            Console.WriteLine($"here? transaction id: {transactionId}");
             var s3Metadata = await _s3MetadataService.GetByTransactionIdAsync(transactionId);
 
             if (s3Metadata is null) return NotFound("There is no S3 metadata available for this transaction...");
@@ -106,7 +107,6 @@ namespace api.Controllers
             {
                 if (receiptImage is null)
                 {
-                    Console.WriteLine($"in here?");
                     return BadRequest("A file is required.");
                 }
 
@@ -140,5 +140,31 @@ namespace api.Controllers
                 return StatusCode(500, e.Message);
             }
         }
+
+        [Authorize]
+        [HttpDelete]
+        [Route("receipts/{transactionId:int}")]
+        public async Task<IActionResult> DeleteReceipt([FromRoute] int transactionId)
+        {
+            var receipt = await _s3MetadataService.GetByTransactionIdAsync(transactionId);
+
+
+            if(receipt is null)
+            {
+                return NotFound("Receipt was not found...");
+            }
+
+            // at this point, the receipt is valid and found, so attempt to delete
+            try
+            {
+                
+            }
+        }
+
+        // [Authorize]
+        // [HttpPut]
+        // [Route("receipt/{transactionId:int}")]
+        // public async Task<IActionResult> UpdateReceipt()
+        // {}
     }
 }

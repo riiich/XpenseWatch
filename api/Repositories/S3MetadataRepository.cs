@@ -51,9 +51,9 @@ public class S3MetadataRepository : IS3MetadataRepository
             .ToListAsync();
     }
 
-    public async Task<S3Metadata?> GetByTransactionIdAsync(int transactionId)
+    public async Task<S3Metadata?> GetByTransactionIdAsync(int transactionId, string userId)
     {
-        return await _context.S3Metadata.FirstOrDefaultAsync(s => s.TransactionId == transactionId);
+        return await _context.S3Metadata.FirstOrDefaultAsync(s => s.TransactionId == transactionId && s.UserId == userId);
     }
 
     public async Task<S3Metadata?> UpdateLastRetrievedAsync(int id)
