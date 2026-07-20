@@ -81,8 +81,14 @@ namespace api.Controllers
         [Route("receipts/{transactionId}")]
         public async Task<IActionResult> GetReceiptFile([FromRoute] int transactionId)
         {
-            Console.WriteLine($"here? transaction id: {transactionId}");
-            var s3Metadata = await _s3MetadataService.GetByTransactionIdAsync(transactionId);
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return Unauthorized("User ID is no where fucking found in the token...");
+            }
+
+            var s3Metadata = await _s3MetadataService.GetByTransactionIdAsync(transactionId, userId);
 
             if (s3Metadata is null) return NotFound("There is no S3 metadata available for this transaction...");
 
@@ -146,8 +152,14 @@ namespace api.Controllers
         [Route("receipts/{transactionId:int}")]
         public async Task<IActionResult> DeleteReceipt([FromRoute] int transactionId)
         {
-            var receipt = await _s3MetadataService.GetByTransactionIdAsync(transactionId);
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return Unauthorized("User ID is no where fucking found in the token...");
+            }
+
+            var receipt = await _s3MetadataService.GetByTransactionIdAsync(transactionId, userId);
 
             if(receipt is null)
             {
@@ -157,7 +169,17 @@ namespace api.Controllers
             // at this point, the receipt is valid and found, so attempt to delete
             try
             {
-                
+                await _fileUploadWorkflowService.DeleteReceiptAsync(userId, transactionId);
+
+                return NoContent();
+            }
+            catch(KeyNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch(InvalidOperationException e)
+            {
+                return StatusCode(500, e.Message);
             }
         }
 

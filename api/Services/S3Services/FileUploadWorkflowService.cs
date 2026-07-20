@@ -82,4 +82,22 @@ public class FileUploadWorkflowService : IFileUploadWorkflowService
 
         return await _s3MetadataRepository.UpdateAsync(item);
     }
+
+    public async Task DeleteReceiptAsync(string userId, int transactionId)
+    {
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            throw new ArgumentException("A user id is required before uploading files.");
+        }
+
+        var receipt = await _s3MetadataRepository.GetReceiptByTransactionIdAsync(transactionId, userId);
+
+        if(receipt is null)
+        {
+            throw new KeyNotFoundException("No receipt exists for this transaction...");
+        }
+
+        await _storageService.DeleteFileAsync(receipt.S3Key);
+        await _s3MetadataRepository.DeleteAsync(receipt);
+    }
 }

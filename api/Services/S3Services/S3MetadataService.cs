@@ -27,9 +27,9 @@ public class S3MetadataService : IS3MetadataService
         return await _s3MetadataRepository.GetByUserIdAsync(userId);
     }
 
-    public async Task<S3Metadata?> GetByTransactionIdAsync(int transactionId)
+    public async Task<S3Metadata?> GetByTransactionIdAsync(int transactionId, string userId)
     {
-        return await _s3MetadataRepository.GetByTransactionIdAsync(transactionId);
+        return await _s3MetadataRepository.GetReceiptByTransactionIdAsync(transactionId, userId);
     }
 
     public async Task DeleteAsync(S3Metadata item)

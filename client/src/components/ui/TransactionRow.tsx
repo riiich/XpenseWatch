@@ -117,9 +117,7 @@ export function TransactionRow({ transaction, onDelete, onEdit }: TransactionRow
 			</div>
 
 			<div className="border-2 p-2">
-				<button onClick={getReceipt}>
-					{hasReceipt === true ? "View Receipt" : hasReceipt === false ? "Add Receipt" : "Receipt"}
-				</button>
+				<button onClick={getReceipt}>Receipt</button>
 			</div>
 
 			<span className="text-[12px] text-slate-500 tracking-wide w-1/7 shrink-0 sm:block">

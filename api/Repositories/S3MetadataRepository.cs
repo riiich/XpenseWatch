@@ -2,6 +2,8 @@ using api.Data;
 using Microsoft.EntityFrameworkCore;
 using api.Interfaces;
 using api.Models;
+using api.Enums;
+using CsvHelper.Configuration.Attributes;
 
 namespace api.Repositories;
 
@@ -51,10 +53,17 @@ public class S3MetadataRepository : IS3MetadataRepository
             .ToListAsync();
     }
 
-    public async Task<S3Metadata?> GetByTransactionIdAsync(int transactionId, string userId)
+    public async Task<S3Metadata?> GetReceiptByTransactionIdAsync(int transactionId, string userId)
     {
-        return await _context.S3Metadata.FirstOrDefaultAsync(s => s.TransactionId == transactionId && s.UserId == userId);
+        return await _context.S3Metadata.FirstOrDefaultAsync(s => s.TransactionId == transactionId && 
+                                                                  s.UserId == userId && 
+                                                                  s.FileCategory == UploadCategory.Receipt);
     }
+
+    // public async Task<S3Metadata?> GetStatementByAccountIdAsync(int transactionId, string userId)
+    // {
+        
+    // }
 
     public async Task<S3Metadata?> UpdateLastRetrievedAsync(int id)
     {
