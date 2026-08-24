@@ -78,7 +78,7 @@ namespace api.Controllers
 
         [Authorize]
         [HttpGet]
-        [Route("receipts/{transactionId}")]
+        [Route("receipts/{transactionId:int}")]
         public async Task<IActionResult> GetReceiptFile([FromRoute] int transactionId)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;

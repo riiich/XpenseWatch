@@ -23,6 +23,8 @@ public class FileUploadWorkflowService : IFileUploadWorkflowService
 
     public async Task<S3Metadata> UploadAsync(string userId, int? transactionId, FileUploadInput file, UploadCategory uploadCategory)
     {
+        Console.WriteLine($"******************* file upload category: {uploadCategory} *******************");
+
         if (string.IsNullOrWhiteSpace(userId))
         {
             throw new ArgumentException("A user id is required before uploading files.");
@@ -40,7 +42,8 @@ public class FileUploadWorkflowService : IFileUploadWorkflowService
             Status = S3MetadataStatus.Pending,
             FileName = file.FileName,
             MimeType = file.ContentType,
-            FileSize = file.Length
+            FileSize = file.Length,
+            FileCategory = uploadCategory    // CHECK THIS (RIGHT NOW IT'S ONLY RECEIPTS BUT CAN ALSO BE STATEMENTS -- FIGURE OUT HOW TO DETERMINE)
         };
 
         await _s3MetadataRepository.CreateAsync(item);

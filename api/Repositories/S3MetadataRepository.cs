@@ -56,8 +56,9 @@ public class S3MetadataRepository : IS3MetadataRepository
     public async Task<S3Metadata?> GetReceiptByTransactionIdAsync(int transactionId, string userId)
     {
         return await _context.S3Metadata.FirstOrDefaultAsync(s => s.TransactionId == transactionId && 
-                                                                  s.UserId == userId && 
-                                                                  s.FileCategory == UploadCategory.Receipt);
+                                                                  s.UserId == userId &&
+                                                                  s.FileCategory == UploadCategory.Receipt
+                                                                  );
     }
 
     // public async Task<S3Metadata?> GetStatementByAccountIdAsync(int transactionId, string userId)

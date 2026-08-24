@@ -33,7 +33,7 @@ namespace api.Services
             else return $"miscellaneous/{Guid.NewGuid()}{extension}";
         }
 
-        public async Task ValidateFileAsync(FileUploadInput file)
+        public async Task ValidateFileAsync(FileUploadInput file, UploadCategory uploadCategory)
         {
             string extension = ValidateFile(file);
             await ValidateFileContentAsync(file.Content, extension);
@@ -41,7 +41,7 @@ namespace api.Services
 
         public async Task UploadFileAsync(FileUploadInput file, string s3Key)
         {
-            await ValidateFileAsync(file);
+            await ValidateFileAsync(file, uploadCategory);
             ValidateS3Settings();
             
             try
@@ -117,7 +117,7 @@ namespace api.Services
 
             if (!_uploadSettings.AcceptedTypes.Contains(file.ContentType, StringComparer.OrdinalIgnoreCase))
             {
-                throw new ArgumentException("Only PDF, CSV, and IMAGES files are allowed.");
+                throw new ArgumentException("Only pdf, csv, and image files are allowed.");
             }
 
             string extension = Path.GetExtension(file.FileName).ToLowerInvariant();
